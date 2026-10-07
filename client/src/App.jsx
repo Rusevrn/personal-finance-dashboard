@@ -1,11 +1,18 @@
+import { Route, Routes } from 'react-router'
 import './App.css'
+import Layout from './components/Layout'
+import Home from './pages/Home'
+import Zzap from './pages/Zzapp'
 
 function App() {
 
   return (
-    <h1 className="text-4xl font-bold text-blue-600">
-      Tailwind test?
-    </h1>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path='/' element={<Home />} />
+      </Route>
+      <Route path='/app' element={<Zzap />} />
+    </Routes>
   )
 }
 
