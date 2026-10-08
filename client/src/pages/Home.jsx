@@ -15,7 +15,7 @@ const Home = () => {
                             Explore Zzap
                         </button>
                     </div>
-                    <h1>Placeholderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr</h1>
+                    <img src="/images/dash-showcase.png" alt="Dashboard showcase"/>
                 </div>
             </div>
         </>

@@ -11,7 +11,7 @@ const Header = ({ appVariant }) => {
         >
             <div className="absolute bottom-0 left-1/2 h-px w-[63%] -translate-x-1/2 bg-linear-to-r from-transparent via-violet-600 to-transparent" />
             <nav className={`mx-auto flex h-full max-w-6xl items-center justify-between px-6 text-xl
-                ${appVariant && 'border-2 border-[#7b258379] rounded-4xl'} `}>
+                ${appVariant && 'border rounded-3xl border-white/8'} `}>
                 <Link to="/" className="text-3xl font-bold transition hover:text-violet-500">
                     Zzap
                 </Link>
