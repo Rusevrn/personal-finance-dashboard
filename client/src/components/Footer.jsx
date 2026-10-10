@@ -1,4 +1,5 @@
 import { FaBug } from "react-icons/fa";
+import { Link } from "react-router";
 
 const Footer = () => {
 
@@ -10,10 +11,11 @@ const Footer = () => {
           <p className="mt-1 text-sm text-gray-400">Want a new feature or found a bug? Send us a heads-up!</p>
         </div>
 
-        <button className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-violet-400/30 bg-violet-500/15 px-4 py-2.5 text-sm font-medium text-violet-200 transition hover:border-violet-400/60 hover:bg-violet-500/25 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400">
-          <FaBug className="text-lg" />Report an issue</button>
+        <Link to='/report' className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-violet-400/30 bg-violet-500/15 px-4 py-2.5 text-sm font-medium text-violet-200 transition hover:border-violet-400/60 hover:bg-violet-500/25 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400">
+          <FaBug className="text-lg" />Report an issue
+        </Link>
       </div>
-    </footer>
+    </footer >
   );
 };
 

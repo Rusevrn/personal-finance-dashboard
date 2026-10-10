@@ -1,4 +1,5 @@
 import { FiUser } from "react-icons/fi";
+import { Link } from "react-router";
 
 const PartnerSlide = () => {
 
@@ -39,9 +40,9 @@ const PartnerSlide = () => {
                             Financial Consultant
                         </p>
 
-                        <button className="mt-2 rounded-xl border border-violet-400 px-3 py-1.5 text-sm text-violet-400 transition hover:border-transparent hover:bg-violet-500 hover:text-white">
+                        <Link to={'/partners'} className="mt-2 rounded-xl border border-violet-400 px-3 py-1.5 text-sm text-violet-400 transition hover:border-transparent hover:bg-violet-500 hover:text-white">
                             Meet our partners
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

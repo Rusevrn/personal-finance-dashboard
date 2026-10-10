@@ -6,6 +6,7 @@ import Zzap from './pages/Zzapp'
 import Partners from './pages/Partners'
 import Security from './pages/Security'
 import Login from './pages/Login'
+import Report from './pages/Report'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
       </Route>
       <Route path='/app' element={<Zzap />} />
       <Route path='/login' element={<Login />} />
+      <Route path='report' element={<Report />} />
     </Routes>
   )
 }

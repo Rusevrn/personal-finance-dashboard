@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 const HeroSlide = () => {
 
     return (
@@ -9,9 +11,9 @@ const HeroSlide = () => {
                         Take control of your money with a clear overview of your income, spending, budgets, and savings — all in one place.
                     </p>
                 </div>
-                <button className="border-violet-400 border rounded-2xl p-1.5 transition text-violet-400 hover:border-transparent hover:bg-violet-500 hover:text-white active:bg-violet-700 active:text-white">
+                <Link to={'/app'} className="border-violet-400 border rounded-2xl p-1.5 transition text-violet-400 hover:border-transparent hover:bg-violet-500 hover:text-white active:bg-violet-700 active:text-white">
                     Explore Zzap
-                </button>
+                </Link>
             </div>
             <img src="/images/dash-showcase.png" alt="Dashboard showcase" className="h-auto max-h-117 w-full object-contain sm:w-1/2" />
         </div>

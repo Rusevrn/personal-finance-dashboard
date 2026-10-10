@@ -1,4 +1,5 @@
 import { FiShield, FiLock, FiEye } from "react-icons/fi";
+import { Link } from "react-router";
 
 const SecuritySlide = () => {
 
@@ -13,6 +14,9 @@ const SecuritySlide = () => {
                     Take control of your financial picture with a clear,
                     organized overview of your money, all in one place.
                 </p>
+                <Link to={'/security'} className="border-violet-400 border rounded-2xl p-1.5 transition text-violet-400 hover:border-transparent hover:bg-violet-500 hover:text-white active:bg-violet-700 active:text-white">
+                    For the curious
+                </Link>
             </div>
 
             <div className="flex flex-1 flex-col gap-4">

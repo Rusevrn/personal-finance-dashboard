@@ -1,4 +1,5 @@
 import { FiLogOut } from 'react-icons/fi'
+import { Link } from 'react-router';
 
 const Sidebar = () => {
 
@@ -15,10 +16,10 @@ const Sidebar = () => {
                 <button className={`${buttonStyle}`}>Expenses</button>
                 <button className={`${buttonStyle}`}>Budgets</button>
             </div>
-            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-base text-gray-300 transition hover:bg-white/4 hover:text-white">
+            <Link to={'/'} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-base text-gray-300 transition hover:bg-white/4 hover:text-white">
                 <FiLogOut className="text-lg" />
                 <span>Log out</span>
-            </button>
+            </Link>
         </div>
     );
 };

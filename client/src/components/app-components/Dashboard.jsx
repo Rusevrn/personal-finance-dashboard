@@ -3,8 +3,9 @@ import Income from "./Income";
 import Expense from "./Expense";
 import DashWidget from "./DashWidget";
 import { SiNetflix, SiSpotify } from 'react-icons/si';
-import { FiShoppingBag } from 'react-icons/fi';
+import { FaAmazon } from "react-icons/fa";
 import SpendingChart from "./SpendingChart";
+import TransactionItem from "./TransactionItem";
 
 const Dashboard = () => {
 
@@ -22,7 +23,7 @@ const Dashboard = () => {
                     <div>
                         <button
                             className="rounded-xl border border-white/10 bg-white/3 px-3 py-2 text-sm text-gray-300 transition hover:border-violet-400/50 hover:bg-white/6 hover:text-white"
-                        >+ Add graph</button>
+                        >+ Add widget</button>
                     </div>
                 </div>
 
@@ -47,107 +48,16 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="w-[25%] border-l border-white/5 pl-6">
-                <div className="grid grid-cols-2 gap-4 auto-rows-37.5">
-                    <DashWidget size='long'>
+                <div className="grid grid-cols-2 gap-7 auto-rows-37.5">
+                    <DashWidget size='large'>
                         <h2 className="text-lg font-semibold text-white">
                             Recent transactions
                         </h2>
-
-                        <div className="mt-6 flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm text-gray-300">
-                                <SiNetflix className="text-lg text-red-500" />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-white">
-                                    Netflix
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Today
-                                </p>
-                            </div>
-
-                            <p className="text-sm font-medium text-red-400">
-                                -€15.99
-                            </p>
-                        </div>
-
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm text-gray-300">
-                                <SiSpotify className="text-lg text-green-500" />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-white">
-                                    Spotify
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Yesterday
-                                </p>
-                            </div>
-
-                            <p className="text-sm font-medium text-red-400">
-                                -€10.99
-                            </p>
-                        </div>
-
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm text-gray-300">
-                                €
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-white">
-                                    Salary
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Sep 30
-                                </p>
-                            </div>
-
-                            <p className="text-sm font-medium text-emerald-400">
-                                +€2,950
-                            </p>
-                        </div>
-
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm text-gray-300">
-                                <FiShoppingBag className="text-lg text-orange-400" />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-white">
-                                    Amazon
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Sep 29
-                                </p>
-                            </div>
-
-                            <p className="text-sm font-medium text-red-400">
-                                -€42.50
-                            </p>
-                        </div>
-
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm text-gray-300">
-                                G
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-medium text-white">
-                                    Grocery Store
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Sep 28
-                                </p>
-                            </div>
-
-                            <p className="text-sm font-medium text-red-400">
-                                -€67.30
-                            </p>
-                        </div>
-
+                        <TransactionItem merchant={'Netflix'} date={'Today'} amount={-15} type={'expense'} />
+                        <TransactionItem merchant={'Spotify'} date={'Yesterday'} amount={-10} type={'expense'} />
+                        <TransactionItem merchant={'Salary'} date={'Sep 30'} amount={2950} type={'income'} />
+                        <TransactionItem merchant={'Googlepay'} date={'Sep 30'} amount={-42.50} type={'expense'} />
+                        <TransactionItem merchant={'Kaufland'} date={'Sep 28'} amount={-67.30} type={'expense'} />
                     </DashWidget>
                 </div>
             </div>

@@ -29,7 +29,7 @@ const securityMeasures = [
 
 const Security = () => {
     return (
-        <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-8">
+        <div className="flex flex-1 items-center justify-center px-4 py-8 pt-20 sm:px-8">
             <div className="mx-auto max-w-5xl space-y-8">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-semibold text-white">
