@@ -7,7 +7,6 @@ const ReportForm = () => {
 
     return (
         <form className="space-y-5">
-            {/* Request type */}
             <fieldset className="space-y-3">
                 <legend className="mb-1.5 text-sm font-medium text-gray-200">
                     What would you like to tell us?
@@ -54,7 +53,6 @@ const ReportForm = () => {
                 </div>
             </fieldset>
 
-            {/* Subject */}
             <div className="space-y-1.5">
                 <label
                     htmlFor="report-subject"
@@ -77,7 +75,6 @@ const ReportForm = () => {
                 />
             </div>
 
-            {/* Description */}
             <div className="space-y-1.5">
                 <label
                     htmlFor="report-description"
@@ -100,7 +97,6 @@ const ReportForm = () => {
                 />
             </div>
 
-            {/* Bug-specific details */}
             {isBugReport && (
                 <div className="space-y-1.5">
                     <label
@@ -125,7 +121,6 @@ const ReportForm = () => {
                 </div>
             )}
 
-            {/* Submit */}
             <div className="flex flex-col-reverse gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs leading-5 text-gray-500">
                     Please don't include passwords or other sensitive information.

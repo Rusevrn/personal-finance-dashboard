@@ -17,7 +17,7 @@ function App() {
         <Route path='/partners' element={<Partners />} />
         <Route path='/security' element={<Security />} />
       </Route>
-      <Route path='/app' element={<Zzap />} />
+      <Route path='/app/:section?' element={<Zzap />} />
       <Route path='/login' element={<Login />} />
       <Route path='report' element={<Report />} />
     </Routes>
