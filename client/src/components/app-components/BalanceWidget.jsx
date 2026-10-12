@@ -1,9 +1,9 @@
-import DashWidget from "./DashWidget";
+import DashWidget from "./widgets/DashWidget";
 
-const Balance = () => {
+const BalanceWidget = ({ size }) => {
 
     return (
-        <DashWidget size='small' type='balance'>
+        <DashWidget size={size} type='balance'>
             <div className="flex h-full flex-col items-center justify-between">
                 <p className="text-sm text-gray-400">Balance</p>
 
@@ -15,4 +15,4 @@ const Balance = () => {
     );
 };
 
-export default Balance;
+export default BalanceWidget;

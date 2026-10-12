@@ -1,9 +1,9 @@
-import DashWidget from "./DashWidget";
+import DashWidget from "./widgets/DashWidget";
 
-const Expense = () => {
+const ExpenseWidget = ({ size }) => {
 
     return (
-        <DashWidget size='small' type='expense'>
+        <DashWidget size={size} type='expense'>
             <div className="flex h-full flex-col items-center justify-between">
                 <p className="text-sm text-gray-400">Expenses</p>
 
@@ -15,4 +15,4 @@ const Expense = () => {
     );
 };
 
-export default Expense;
+export default ExpenseWidget;

@@ -1,7 +1,7 @@
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
-import DashWidget from './DashWidget';
+import DashWidget from './widgets/DashWidget';
 
-const SpendingChart = () => {
+const LineChartWidget = ({ size }) => {
 
     const data = [
         { month: 'Jan', before: 1440, after: 840 },
@@ -12,7 +12,7 @@ const SpendingChart = () => {
     ];
 
     return (
-        <DashWidget size='large' type='spending'>
+        <DashWidget size={size} type='spending'>
             <div className="h-full w-full">
                 <LineChart data={data} style={{ width: '100%', height: '100%' }}>
                     <CartesianGrid stroke="rgba(255, 255, 255, 0.06)" />
@@ -49,4 +49,4 @@ const SpendingChart = () => {
     );
 };
 
-export default SpendingChart;
+export default LineChartWidget;

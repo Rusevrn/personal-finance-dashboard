@@ -10,11 +10,11 @@ const Sidebar = () => {
             <div className="absolute right-0 top-1/2 h-[90%] w-px -translate-y-1/2 bg-linear-to-b from-transparent via-violet-600 to-transparent" />
             <div className="flex flex-col gap-5 max-h-fit pt-5">
 
-                <button className={`${buttonStyle}`}>Dashboard</button>
-                <button className={`${buttonStyle}`}>Transactions</button>
-                <button className={`${buttonStyle}`}>Income</button>
-                <button className={`${buttonStyle}`}>Expenses</button>
-                <button className={`${buttonStyle}`}>Budgets</button>
+                <Link to={'/app'} className={`${buttonStyle}`}>Dashboard</Link>
+                <Link to={'/app/transactions'} className={`${buttonStyle}`}>Transactions</Link>
+                <Link to={'/app/income'} className={`${buttonStyle}`}>Income</Link>
+                <Link to={'/app/expenses'} className={`${buttonStyle}`}>Expenses</Link>
+                <Link to={'/app/budgets'} className={`${buttonStyle}`}>Budgets</Link>
             </div>
             <Link to={'/'} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-base text-gray-300 transition hover:bg-white/4 hover:text-white">
                 <FiLogOut className="text-lg" />

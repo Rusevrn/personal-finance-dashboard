@@ -1,10 +1,10 @@
-import DashWidget from "./DashWidget";
+import DashWidget from "./widgets/DashWidget";
 import TransactionItem from "./TransactionItem";
 
-const RecentTransactions = () => {
+const RecentTransactions = ({ size }) => {
 
     return (
-        <DashWidget size='large'>
+        <DashWidget size={size}>
             <h2 className="text-lg font-semibold text-white">
                 Recent transactions
             </h2>

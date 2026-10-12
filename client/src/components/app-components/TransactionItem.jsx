@@ -1,12 +1,6 @@
-import { FaShoppingCart } from "react-icons/fa";
-import { FaCar } from "react-icons/fa";
-import { FaWallet } from "react-icons/fa6";
-import { FaHouse } from "react-icons/fa6";
-import { SiLidl } from "react-icons/si";
-import { SiKaufland } from "react-icons/si";
-import { FaGooglePay } from "react-icons/fa";
-import { SiNetflix } from "react-icons/si";
-import { FaSpotify } from "react-icons/fa";
+import { FaShoppingCart, FaCar, FaGooglePay, FaSpotify } from "react-icons/fa";
+import { FaWallet, FaHouse } from "react-icons/fa6";
+import { SiLidl, SiNetflix, SiKaufland } from "react-icons/si";
 
 const categoryIcon = {
     'Transport': <FaCar className="text-lg text-violet-400" />,
