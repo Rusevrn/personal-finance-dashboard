@@ -24,4 +24,14 @@ export const widgetSize = {
         columns: 2,
         rows: 3
     },
+    widest: {
+        className: 'col-span-6 row-span-1',
+        columns: 6,
+        rows: 1
+    },
+    xl: {
+        className: 'col-span-4 row-span-3',
+        columns: 4,
+        rows: 4
+    }
 }

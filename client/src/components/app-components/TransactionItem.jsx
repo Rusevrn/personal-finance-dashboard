@@ -1,23 +1,25 @@
 import { FaShoppingCart, FaCar, FaGooglePay, FaSpotify } from "react-icons/fa";
 import { FaWallet, FaHouse } from "react-icons/fa6";
 import { SiLidl, SiNetflix, SiKaufland } from "react-icons/si";
+import { PiWine } from "react-icons/pi";
 
 const categoryIcon = {
     'Transport': <FaCar className="text-lg text-violet-400" />,
     'Salary': <FaWallet className="text-lg text-violet-400" />,
     'Housing': <FaHouse className="text-lg text-violet-400" />,
-    'Groceries': <FaShoppingCart className="text-lg text-violet-400" />
+    'Groceries': <FaShoppingCart className="text-lg text-violet-400" />,
+    'Entertainment': <PiWine className="text-lg text-violet-400" />
 };
 
 const merchantIcons = {
-    'Lidl': <SiLidl className="text-lg text-blue-600" />,
+    'Lidl': <SiLidl className="text-2xl text-blue-600" />,
     'Kaufland': <SiKaufland className="text-lg text-red-500" />,
     'Googlepay': <FaGooglePay className="text-3xl text-blue-400" />,
     'Netflix': <SiNetflix className="text-lg text-red-500" />,
     'Spotify': <FaSpotify className="text-lg text-green-500" />
 };
 
-const TransactionItem = ({ merchant, date, amount, type }) => {
+const TransactionItem = ({ merchant, category, date, amount, type }) => {
 
     const formattedAmount = new Intl.NumberFormat("en-IE", {
         style: "currency",
@@ -27,7 +29,7 @@ const TransactionItem = ({ merchant, date, amount, type }) => {
 
     const icon =
         merchantIcons[merchant] ??
-        categoryIcon[merchant] ??
+        categoryIcon[category] ??
         String(merchant).charAt(0).toUpperCase();
 
     return (

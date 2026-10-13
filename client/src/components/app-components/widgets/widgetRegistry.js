@@ -3,6 +3,9 @@ import ExpenseWidget from "../ExpenseWidget";
 import IncomeWidget from "../IncomeWidget";
 import RecentTransactions from "../RecentTransactions";
 import LineChartWidget from "../LineChartWidget";
+import SpendingByCategoryWidget from '../SpendingByCategoryWidget';
+import ExpenseTransactionsWidget from '../ExpenseTransactionsWidget';
+import SpendingOverTimeWidget from '../SpendingOverTimeWidget';
 
 export const widgetRegistry = {
 
@@ -46,6 +49,30 @@ export const widgetRegistry = {
         size: 'large',
         section: 'activity',
     },
+    /*spendingByCategoryWidget: {
+        key: 'spendingByCategoryWidget',
+        label: 'Spending by category',
+        description: 'Track your spendings by category.',
+        component: SpendingByCategoryWidget,
+        size: 'large',
+        section: 'expenses',
+    },
+    expenseTransactionsWidget: {
+        key: 'expenseTransactionsWidget',
+        label: 'Expense transactions',
+        description: 'Track your expense transactions.',
+        component: ExpenseTransactionsWidget,
+        size: 'long',
+        section: 'expenses',
+    },
+    spendingOverTimeWidget: {
+        key: 'spendingOverTimeWidget',
+        label: 'Spendings over time',
+        description: 'Track your spendings over time.',
+        component: SpendingOverTimeWidget,
+        size: 'widest',
+        section: 'expenses',
+    },
 
-
+*/
 };

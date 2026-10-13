@@ -1,3 +1,4 @@
+
 const Transactions = () => {
 
   return (
@@ -11,7 +12,7 @@ const Transactions = () => {
       </div>
 
       <div className="grid grid-cols-6 auto-rows-37.5 grid-flow-row-dense gap-4">
-        <h1>Transactions widgets</h1>
+        <h1>Transactions</h1>
       </div>
 
     </div>
