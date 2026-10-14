@@ -1,9 +1,8 @@
 import { useParams } from "react-router";
-import DashboardOverview from "../../pages/finance/DashboardOverview";
-import Transactions from "../../pages/finance/Transactions";
-import Income from "../../pages/finance/Income";
-import Budget from "../../pages/finance/Budget";
-import Expense from "../../pages/finance/Expense";
+import DashboardOverview from "../../features/dashboard/DashboardOverview";
+import Income from "../../features/income/Income";
+import Budget from "../../features/budget/Budget";
+import Expense from "../../features/expense/Expense";
 
 const Dashboard = () => {
     const { section } = useParams();
@@ -15,7 +14,6 @@ const Dashboard = () => {
 
             {!section && <DashboardOverview />}
 
-            {section === 'transactions' && <Transactions />}
             {section === 'expenses' && <Expense />}
             {section === 'budgets' && <Budget />}
             {section === 'income' && <Income />}

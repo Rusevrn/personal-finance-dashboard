@@ -1,11 +1,11 @@
-import BalanceWidget from "../BalanceWidget";
-import ExpenseWidget from "../ExpenseWidget";
-import IncomeWidget from "../IncomeWidget";
-import RecentTransactions from "../RecentTransactions";
-import LineChartWidget from "../LineChartWidget";
-import SpendingByCategoryWidget from '../SpendingByCategoryWidget';
-import ExpenseTransactionsWidget from '../ExpenseTransactionsWidget';
-import SpendingOverTimeWidget from '../SpendingOverTimeWidget';
+import BalanceWidget from "../../../features/features-widgets/BalanceWidget";
+import ExpenseWidget from "../../../features/features-widgets/ExpenseWidget";
+import IncomeWidget from "../../../features/features-widgets/IncomeWidget";
+import RecentTransactions from "../../../features/features-widgets/RecentTransactions";
+import DemoWidget from "../../../features/features-widgets/DemoWidget";
+import SpendingByCategoryWidget from '../../../features/expense/SpendingByCategoryWidget';
+import TransactionFormWidget from '../../../features/features-widgets/TransactionFormWidget';
+import BudgetCategoryWidget from '../../../features/budget/BudgetCategoryWidget';
 
 export const widgetRegistry = {
 
@@ -33,11 +33,11 @@ export const widgetRegistry = {
         size: 'small',
         section: 'overview',
     },
-    lineChartWidget: {
-        key: 'lineChartWidget',
+    demoWidget: {
+        key: 'DemoWidget',
         label: 'Line chart',
-        description: 'Track your spending over time.',
-        component: LineChartWidget,
+        description: 'Test the "Weight limit" of the overview section :)',
+        component: DemoWidget,
         size: 'large',
         section: 'overview',
     },
@@ -49,30 +49,30 @@ export const widgetRegistry = {
         size: 'large',
         section: 'activity',
     },
-    /*spendingByCategoryWidget: {
+    spendingByCategoryWidget: {
         key: 'spendingByCategoryWidget',
         label: 'Spending by category',
         description: 'Track your spendings by category.',
         component: SpendingByCategoryWidget,
         size: 'large',
-        section: 'expenses',
+        section: 'overview',
     },
-    expenseTransactionsWidget: {
-        key: 'expenseTransactionsWidget',
-        label: 'Expense transactions',
-        description: 'Track your expense transactions.',
-        component: ExpenseTransactionsWidget,
-        size: 'long',
-        section: 'expenses',
+    transactionFormWidget: {
+        key: 'transactionFormWidget',
+        label: 'Transaction form',
+        description: 'Add any type of transaction.',
+        component: TransactionFormWidget,
+        size: 'large',
+        section: 'activity',
     },
-    spendingOverTimeWidget: {
-        key: 'spendingOverTimeWidget',
-        label: 'Spendings over time',
-        description: 'Track your spendings over time.',
-        component: SpendingOverTimeWidget,
-        size: 'widest',
-        section: 'expenses',
-    },
+    budgetCategoryWidget: {
+        key: 'budgetCategoryWidget',
+        label: 'Budget category',
+        description: 'Track your allowed budgets.',
+        component: BudgetCategoryWidget,
+        size: 'large',
+        section: 'overview',
+    }
 
-*/
+
 };

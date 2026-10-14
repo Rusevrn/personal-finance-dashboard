@@ -1,5 +1,5 @@
+import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
-import DashWidget from './widgets/DashWidget';
 
 const LineChartWidget = ({ size }) => {
 

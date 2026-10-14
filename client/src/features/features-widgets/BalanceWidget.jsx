@@ -1,4 +1,4 @@
-import DashWidget from "./widgets/DashWidget";
+import DashWidget from "../../components/app-components/widgets/DashWidget";
 
 const BalanceWidget = ({ size }) => {
 
@@ -7,7 +7,7 @@ const BalanceWidget = ({ size }) => {
             <div className="flex h-full flex-col items-center justify-between">
                 <p className="text-sm text-gray-400">Balance</p>
 
-                <p className="text-3xl font-semibold text-white">
+                <p className="text-2xl font-semibold text-white">
                     €4,280
                 </p>
             </div>

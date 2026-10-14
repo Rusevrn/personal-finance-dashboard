@@ -1,4 +1,4 @@
-import DashWidget from "./widgets/DashWidget";
+import DashWidget from "../../components/app-components/widgets/DashWidget";
 
 const budgetData = [
     { category: "Groceries", spent: 245.8, limit: 350, color: "#8B5CF6" },

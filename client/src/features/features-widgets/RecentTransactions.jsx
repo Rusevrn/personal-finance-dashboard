@@ -1,5 +1,5 @@
-import DashWidget from "./widgets/DashWidget";
-import TransactionItem from "./TransactionItem";
+import DashWidget from "../../components/app-components/widgets/DashWidget";
+import TransactionItem from "../../components/app-components/TransactionItem";
 
 const RecentTransactions = ({ size }) => {
 

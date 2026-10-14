@@ -11,7 +11,6 @@ const Sidebar = () => {
             <div className="flex flex-col gap-5 max-h-fit pt-5">
 
                 <Link to={'/app'} className={`${buttonStyle}`}>Dashboard</Link>
-                <Link to={'/app/transactions'} className={`${buttonStyle}`}>Transactions</Link>
                 <Link to={'/app/income'} className={`${buttonStyle}`}>Income</Link>
                 <Link to={'/app/expenses'} className={`${buttonStyle}`}>Expenses</Link>
                 <Link to={'/app/budgets'} className={`${buttonStyle}`}>Budgets</Link>

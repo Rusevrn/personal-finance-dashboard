@@ -1,7 +1,7 @@
-import AddBudgetWidget from "../../components/app-components/AddBudgetWidget";
-import BudgetCategoryWidget from "../../components/app-components/BudgetCategoryWidget";
-import BalanceWidget from "../../components/app-components/BalanceWidget";
-import RemainingBudgetWidget from "../../components/app-components/RemainingBudgetWidget";
+import AddBudgetWidget from "./AddBudgetWidget";
+import BudgetCategoryWidget from "./BudgetCategoryWidget";
+import BalanceWidget from "../features-widgets/BalanceWidget";
+import RemainingBudgetWidget from "./RemainingBudgetWidget";
 
 const Budget = () => {
 

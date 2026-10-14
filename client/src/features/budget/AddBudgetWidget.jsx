@@ -1,4 +1,4 @@
-import DashWidget from "./widgets/DashWidget";
+import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { FiPlus } from "react-icons/fi";
 
 const AddBudgetWidget = () => {

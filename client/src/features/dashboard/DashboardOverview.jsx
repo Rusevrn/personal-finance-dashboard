@@ -64,7 +64,7 @@ const DashboardOverview = () => {
 
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 auto-rows-37.5 grid-flow-row-dense pt-1">
+                <div className="grid grid-cols-6 gap-4 auto-rows-37.5 grid-flow-row-dense pt-1">
                     {activeWidgets.map(activeWidgetKey => {
                         const widget = widgetRegistry[activeWidgetKey];
 
