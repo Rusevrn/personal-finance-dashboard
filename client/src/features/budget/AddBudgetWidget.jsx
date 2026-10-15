@@ -3,16 +3,28 @@ import { FiPlus } from "react-icons/fi";
 
 const AddBudgetWidget = () => {
 
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        // bruh... you need a user session, you can't post without a token...
+        //const response = await fetch(`http://localhost:3030/data/budgets...`);
+
+        console.log(data)
+    };
+
     return (
         <DashWidget size="large">
             <h2 className="mb-1 text-lg font-semibold text-white">
                 Add Budget
             </h2>
             <p className="mb-5 text-sm text-white/45">
-                Set a spending limit for a category
+                Set a new spending limit for a category
             </p>
 
-            <form className="flex flex-col gap-4">
+            <form className="flex flex-col gap-4" onSubmit={submitHandler}>
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="budget-category" className="text-sm text-white/65">Category</label>
                     <select
@@ -46,7 +58,7 @@ const AddBudgetWidget = () => {
                 </div>
 
                 <button
-                    type="button"
+                    type="submit"
                     className="flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-violet-500"
                 >
                     <FiPlus size={16} />

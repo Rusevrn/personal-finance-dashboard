@@ -1,12 +1,14 @@
+import { useState } from "react";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
+import { useEffect } from "react";
 
-const budgetData = [
-    { category: "Groceries", spent: 245.8, limit: 350, color: "#8B5CF6" },
-    { category: "Housing", spent: 180, limit: 250, color: "#6366F1" },
-    { category: "Transport", spent: 86.5, limit: 120, color: "#06B6D4" },
-    { category: "Entertainment", spent: 64.99, limit: 80, color: "#F59E0B" },
-    { category: "Dining", spent: 92.4, limit: 75, color: "#F472B6" },
-];
+const categoryColors = {
+    Groceries: "#8B5CF6",
+    Housing: "#6366F1",
+    Transport: "#06B6D4",
+    Entertainment: "#F59E0B",
+    Dining: "#F472B6",
+};
 
 const formatCurrency = (value) =>
     new Intl.NumberFormat("en-IE", {
@@ -14,7 +16,47 @@ const formatCurrency = (value) =>
         currency: "EUR",
     }).format(value);
 
-const BudgetCategoryWidget = () => {
+const BudgetCategoryWidget = ({ setRemainingBudget }) => {
+
+    const [data, setData] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+
+
+    // change with real user id by getting it from user context
+    const _ownerId = "35c62d76-8152-4626-8712-eeb96381bea8";
+
+    const urlSearchParamsTransactions = new URLSearchParams({
+        where: `month="2026-10" AND type="expense" AND _ownerId="${_ownerId}"`
+    });
+
+    useEffect(() => {
+        fetch('http://localhost:3030/data/budgets')
+            .then(res => res.json())
+            .then(result => setData(result));
+        fetch(`http://localhost:3030/data/transactions?${urlSearchParamsTransactions}`)
+            .then(res => res.json())
+            .then(result => setTransactions(result));
+    }, [])
+
+    useEffect(() => {
+        const updatedData = data.map(budget => {
+            const spent = transactions
+                .filter(transaction =>
+                    transaction.category === budget.category
+                )
+                .reduce((total, transaction) => total + transaction.amount, 0);
+
+            return { ...budget, spent };
+        });
+        setData(updatedData);
+
+        if (setRemainingBudget) {
+            setRemainingBudget(updatedData.reduce(
+                (total, budget) => total + budget.limit - budget.spent, 0
+            ));
+        }
+
+    }, [transactions]);
 
     return (
         <DashWidget size="xl">
@@ -26,8 +68,9 @@ const BudgetCategoryWidget = () => {
             </p>
 
             <div className="flex flex-col gap-5">
-                {budgetData.map((budget) => {
-                    const percentage = (budget.spent / budget.limit) * 100;
+                {data.map((budget) => {
+                    const color = categoryColors[budget.category];
+                    const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
                     const overBudget = percentage > 100;
 
                     return (
@@ -46,17 +89,17 @@ const BudgetCategoryWidget = () => {
                                     className="h-full rounded-full"
                                     style={{
                                         width: `${Math.min(percentage, 100)}%`,
-                                        backgroundColor: overBudget ? "#F87171" : budget.color,
+                                        backgroundColor: overBudget ? "#F87171" : color,
                                     }}
                                 />
                             </div>
 
-                            <p className={`mt-1.5 text-xs ${overBudget ? "text-red-400" : "text-white/35"
+                            {<p className={`mt-1.5 text-xs ${overBudget ? "text-red-400" : "text-white/35"
                                 }`}>
                                 {overBudget
                                     ? `${formatCurrency(budget.spent - budget.limit)} over budget`
                                     : `${Math.round(percentage)}% used`}
-                            </p>
+                            </p>}
                         </div>
                     );
                 })}

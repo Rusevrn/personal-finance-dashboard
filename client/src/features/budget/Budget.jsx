@@ -2,8 +2,11 @@ import AddBudgetWidget from "./AddBudgetWidget";
 import BudgetCategoryWidget from "./BudgetCategoryWidget";
 import BalanceWidget from "../features-widgets/BalanceWidget";
 import RemainingBudgetWidget from "./RemainingBudgetWidget";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Budget = () => {
+    const [remainingBudget, setRemainingBudget] = useState();
 
     return (
         <div className="flex flex-col w-full">
@@ -16,9 +19,9 @@ const Budget = () => {
             <div className="grid grid-cols-6 auto-rows-37.5 grid-flow-row-dense gap-4">
 
                 <AddBudgetWidget />
-                <BudgetCategoryWidget />
+                <BudgetCategoryWidget setRemainingBudget={setRemainingBudget} />
                 <BalanceWidget size='small' />
-                <RemainingBudgetWidget />
+                <RemainingBudgetWidget remainder={remainingBudget} />
             </div>
 
         </div>

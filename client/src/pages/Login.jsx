@@ -1,7 +1,29 @@
+import { useContext } from "react";
 import { FiZap } from "react-icons/fi";
+import UserContext from "../context/UserContext";
+
+
 
 const Login = () => {
+    const { setUser } = useContext(UserContext);
 
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        const response = await fetch(`http://localhost:3030/users/login`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        const result = await response.json();
+        setUser(result);
+        // need to persist user because you lose the state after you navigate out of login...
+    };
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#1f2028] px-4 py-10 pb-30">
             <div className="flex w-full max-w-97 flex-col items-center gap-5">
@@ -14,11 +36,12 @@ const Login = () => {
                     <p className="mt-1 text-sm text-[#a6a3b3]">Your finances, in focus.</p>
                 </div>
 
-                <form className="w-full space-y-5 rounded-2xl border border-white/10 bg-[#25242f] p-6">
+                <form onSubmit={submitHandler} className="w-full space-y-5 rounded-2xl border border-white/10 bg-[#25242f] p-6">
                     <div className="space-y-2">
                         <label htmlFor="email" className="block text-sm font-medium text-[#d5d2df]">Email address</label>
                         <input
                             id="email"
+                            name="email"
                             type="email"
                             placeholder="you@example.com"
                             className="w-full rounded-lg border border-[#484552] bg-[#1f2028] px-3 py-3 text-sm text-white outline-none transition placeholder:text-[#777483] focus:border-violet-400 focus:ring-1 focus:ring-violet-400/30"
@@ -31,6 +54,7 @@ const Login = () => {
                             <input
                                 id="password"
                                 type="password"
+                                name="password"
                                 placeholder="Enter your password"
                                 className="w-full bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#777483]"
                             />
@@ -42,7 +66,7 @@ const Login = () => {
 
                     <p className="text-center text-sm text-[#a6a3b3]">
                         New to Zzap?{" "}
-                        <button className="font-medium text-violet-300 transition hover:text-violet-200">
+                        <button type="submit" className="font-medium text-violet-300 transition hover:text-violet-200">
                             Create an account
                         </button>
                     </p>

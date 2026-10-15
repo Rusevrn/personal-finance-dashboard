@@ -7,6 +7,7 @@ import Partners from './pages/Partners'
 import Security from './pages/Security'
 import Login from './pages/Login'
 import Report from './pages/Report'
+import UserProvider from './context/UserProvider'
 
 function App() {
 
@@ -17,9 +18,12 @@ function App() {
         <Route path='/partners' element={<Partners />} />
         <Route path='/security' element={<Security />} />
       </Route>
-      <Route path='/app/:section?' element={<Zzap />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='report' element={<Report />} />
+
+      <Route element={<UserProvider />}>
+        <Route path='/app/:section?' element={<Zzap />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='report' element={<Report />} />
+      </Route>
     </Routes>
   )
 }
