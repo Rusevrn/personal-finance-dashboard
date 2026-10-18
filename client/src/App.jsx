@@ -8,6 +8,7 @@ import Security from './pages/Security'
 import Login from './pages/Login'
 import Report from './pages/Report'
 import UserProvider from './context/UserProvider'
+import RouteGuard from './components/RouteGuard'
 
 function App() {
 
@@ -20,7 +21,9 @@ function App() {
       </Route>
 
       <Route element={<UserProvider />}>
-        <Route path='/app/:section?' element={<Zzap />} />
+        <Route element={<RouteGuard />}>
+          <Route path='/app/:section?' element={<Zzap />} />
+        </Route>
         <Route path='/login' element={<Login />} />
         <Route path='report' element={<Report />} />
       </Route>

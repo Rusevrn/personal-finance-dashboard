@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { FiZap } from "react-icons/fi";
 import UserContext from "../context/UserContext";
-
-
+import { useNavigate } from 'react-router';
 
 const Login = () => {
-    const { setUser } = useContext(UserContext);
+    const { loginHandler } = useContext(UserContext);
+    const navigate = useNavigate()
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -13,16 +13,12 @@ const Login = () => {
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
 
-        const response = await fetch(`http://localhost:3030/users/login`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        const result = await response.json();
-        setUser(result);
-        // need to persist user because you lose the state after you navigate out of login...
+        try {
+            await loginHandler(data);
+            navigate('/app');
+        } catch (error) {
+            console.log(error.message);
+        }
     };
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#1f2028] px-4 py-10 pb-30">

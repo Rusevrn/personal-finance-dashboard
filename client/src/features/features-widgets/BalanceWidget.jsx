@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
+import UserContext from "../../context/UserContext";
 
 const BalanceWidget = ({ size }) => {
+    const { user: { balance } } = useContext(UserContext);
 
     return (
         <DashWidget size={size} type='balance'>
@@ -8,7 +11,7 @@ const BalanceWidget = ({ size }) => {
                 <p className="text-sm text-gray-400">Balance /m</p>
 
                 <p className="text-2xl font-semibold text-white">
-                    €4,280
+                    €{balance}
                 </p>
             </div>
         </DashWidget>

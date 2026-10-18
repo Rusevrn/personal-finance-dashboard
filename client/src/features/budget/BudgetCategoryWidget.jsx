@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { useEffect } from "react";
+import UserContext from "../../context/UserContext";
+import { calculateBudgets } from "../../utils/calculateBudgets";
 
 const categoryColors = {
     Groceries: "#8B5CF6",
@@ -17,46 +19,29 @@ const formatCurrency = (value) =>
     }).format(value);
 
 const BudgetCategoryWidget = ({ setRemainingBudget }) => {
-
     const [data, setData] = useState([]);
     const [transactions, setTransactions] = useState([]);
-
-
-    // change with real user id by getting it from user context
-    const _ownerId = "35c62d76-8152-4626-8712-eeb96381bea8";
+    const { user: { _id } } = useContext(UserContext);
 
     const urlSearchParamsTransactions = new URLSearchParams({
-        where: `month="2026-10" AND type="expense" AND _ownerId="${_ownerId}"`
+        where: `month="2026-10" AND type="expense" AND _ownerId="${_id}"`
     });
 
     useEffect(() => {
         fetch('http://localhost:3030/data/budgets')
             .then(res => res.json())
             .then(result => setData(result));
+
         fetch(`http://localhost:3030/data/transactions?${urlSearchParamsTransactions}`)
             .then(res => res.json())
             .then(result => setTransactions(result));
     }, [])
 
+    const { budgetsWithSpent, remainingBudget } = calculateBudgets(data, transactions);
+
     useEffect(() => {
-        const updatedData = data.map(budget => {
-            const spent = transactions
-                .filter(transaction =>
-                    transaction.category === budget.category
-                )
-                .reduce((total, transaction) => total + transaction.amount, 0);
-
-            return { ...budget, spent };
-        });
-        setData(updatedData);
-
-        if (setRemainingBudget) {
-            setRemainingBudget(updatedData.reduce(
-                (total, budget) => total + budget.limit - budget.spent, 0
-            ));
-        }
-
-    }, [transactions]);
+        if (setRemainingBudget) setRemainingBudget(remainingBudget);
+    }, [remainingBudget, setRemainingBudget]);
 
     return (
         <DashWidget size="xl">
@@ -68,7 +53,7 @@ const BudgetCategoryWidget = ({ setRemainingBudget }) => {
             </p>
 
             <div className="flex flex-col gap-5">
-                {data.map((budget) => {
+                {budgetsWithSpent.map((budget) => {
                     const color = categoryColors[budget.category];
                     const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
                     const overBudget = percentage > 100;

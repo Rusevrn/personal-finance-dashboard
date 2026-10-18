@@ -3,11 +3,10 @@ import BudgetCategoryWidget from "./BudgetCategoryWidget";
 import BalanceWidget from "../features-widgets/BalanceWidget";
 import RemainingBudgetWidget from "./RemainingBudgetWidget";
 import { useState } from "react";
-import { useEffect } from "react";
 
 const Budget = () => {
     const [remainingBudget, setRemainingBudget] = useState();
-
+    
     return (
         <div className="flex flex-col w-full">
 
