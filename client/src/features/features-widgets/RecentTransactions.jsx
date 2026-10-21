@@ -1,18 +1,34 @@
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import TransactionItem from "../../components/app-components/TransactionItem";
+import UserContext from "../../context/UserContext";
+import { useContext } from "react";
+import useFetch from "../../hooks/useFetch";
 
-const RecentTransactions = ({ size }) => {
-
+const RecentTransactions = ({ size, refreshKey }) => {
+    const { user: { _id } } = useContext(UserContext);
+    const urlSearchParamsExpenseTransactions = new URLSearchParams({
+        where: `_ownerId="${_id}"`,
+        sortBy: 'date desc, _createdOn desc',
+        offset: 0,
+        pageSize: 5
+    });
+    const { data: transactions } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, null, refreshKey);
+    
     return (
         <DashWidget size={size}>
             <h2 className="text-lg font-semibold text-white">
                 Recent transactions
             </h2>
-            <TransactionItem merchant={'Netflix'} date={'Today'} amount={-15} type={'expense'} />
-            <TransactionItem merchant={'Spotify'} date={'Yesterday'} amount={-10} type={'expense'} />
-            <TransactionItem merchant={'Salary'} date={'Sep 30'} amount={2950} type={'income'} />
-            <TransactionItem merchant={'Googlepay'} date={'Sep 30'} amount={-42.50} type={'expense'} />
-            <TransactionItem merchant={'Kaufland'} date={'Sep 28'} amount={-67.30} type={'expense'} />
+            {transactions.map(transaction => (
+                <TransactionItem
+                    key={transaction._id}
+                    merchant={transaction.merchant}
+                    category={transaction.category}
+                    date={transaction.date}
+                    type={transaction.type}
+                    amount={transaction.amount}
+                />
+            ))}
         </DashWidget>
     );
 };

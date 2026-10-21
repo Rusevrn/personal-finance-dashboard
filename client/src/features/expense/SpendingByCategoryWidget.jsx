@@ -1,6 +1,8 @@
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Sector } from "recharts";
-
+import useFetch from "../../hooks/useFetch";
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
 
 const formatCurrency = (value) =>
     new Intl.NumberFormat("en-IE", {
@@ -8,16 +10,43 @@ const formatCurrency = (value) =>
         currency: "EUR",
     }).format(value);
 
-const SpendingByCategoryWidget = () => {
+const categoryColors = {
+    Groceries: "#8B5CF6",
+    Housing: "#6366F1",
+    Transport: "#06B6D4",
+    Utilities: "#38BDF8",
+    Dining: "#F472B6",
+    Shopping: "#FB923C",
+    Health: "#4ADE80",
+    Entertainment: "#F59E0B",
+};
 
-    const spendingData = [
-        { name: "Groceries", value: 245.8, color: "#8B5CF6" },
-        { name: "Housing", value: 180, color: "#6366F1" },
-        { name: "Transport", value: 86.5, color: "#06B6D4" },
-        { name: "Entertainment", value: 64.99, color: "#F59E0B" },
-        { name: "Dining", value: 52.4, color: "#F472B6" },
-        { name: "Subscriptions", value: 29.98, color: "#34D399" },
-    ];
+const SpendingByCategoryWidget = ({ refreshKey }) => {
+    const { user: { _id } } = useContext(UserContext);
+    const today = new Date();
+    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    const urlSearchParamsExpenseTransactions = new URLSearchParams({
+        where: `type="expense" AND _ownerId="${_id}" AND month="${currentMonth}"`
+    });
+    const { data: transactions } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, null, refreshKey);
+
+    const totals = transactions.reduce((acc, transaction) => {
+        const category = transaction.category;
+
+        if (acc[category] === undefined) {
+            acc[category] = transaction.amount
+        }
+        else {
+            acc[category] += transaction.amount
+        }
+        return acc;
+    }, {})
+
+    const spendingData = Object.entries(totals).map(([name, value]) => ({
+        name,
+        value,
+        color: categoryColors[name] ?? "#9CA3AF",
+    }));
 
     const total = spendingData.reduce(
         (sum, category) => sum + category.value,
@@ -80,7 +109,7 @@ const SpendingByCategoryWidget = () => {
                     </ResponsiveContainer>
                 </div>
 
-                <div className="flex min-w-0 flex-col gap-3">
+                <div className="flex min-w-0 flex-col gap-1">
                     {spendingData.map((category) => (
                         <div
                             key={category.name}

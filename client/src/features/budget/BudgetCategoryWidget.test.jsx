@@ -1,82 +1,170 @@
-import { afterEach, expect, test, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
-
+import { render, screen, waitFor, cleanup, } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi, afterEach,} from 'vitest';
 import BudgetCategoryWidget from './BudgetCategoryWidget';
 import UserContext from '../../context/UserContext';
-
+import useFetch from '../../hooks/useFetch';
 
 afterEach(() => {
     cleanup();
-    vi.unstubAllGlobals();
 });
 
-test('displays a budget category and its spending percentage', async () => {
+vi.mock('../../hooks/useFetch', () => ({
+    default: vi.fn()
+}));
+
+vi.mock('../../components/app-components/widgets/DashWidget', () => ({
+    default: ({ children }) => <div>{children}</div>
+}));
+
+describe('BudgetCategoryWidget', () => {
+    let setRemainingBudget;
+    let setBudgets;
+
     const budgets = [
-        { category: 'Groceries', limit: 300 },
+        { category: 'Groceries', limit: 500 },
+        { category: 'Housing', limit: 800 }
     ];
 
     const transactions = [
-        { category: 'Groceries', amount: 120 },
+        { category: 'Groceries', amount: 150, type: 'expense' },
+        { category: 'Groceries', amount: 100, type: 'expense' },
+        { category: 'Housing', amount: 800, type: 'expense' }
     ];
 
-    vi.stubGlobal('fetch', vi.fn((url) => {
-        const result = String(url).includes('/data/budgets')
-            ? budgets
-            : transactions;
+    const renderWidget = (props = {}) =>
+        render(
+            <UserContext.Provider value={{ user: { _id: 'user-1' } }}>
+                <BudgetCategoryWidget
+                    setRemainingBudget={setRemainingBudget}
+                    setBudgets={setBudgets}
+                    {...props}
+                />
+            </UserContext.Provider>
+        );
 
-        return Promise.resolve({
-            json: () => Promise.resolve(result),
+    beforeEach(() => {
+        vi.clearAllMocks();
+
+        setRemainingBudget = vi.fn();
+        setBudgets = vi.fn();
+
+        useFetch.mockReset().mockImplementation((initialState, url) => {
+            if (url.startsWith('data/budgets?')) {
+                return { data: budgets };
+            }
+
+            if (url.startsWith('data/transactions?')) {
+                return { data: transactions };
+            }
+
+            return { data: initialState };
         });
-    }));
+    });
 
-    render(
-        <UserContext.Provider value={{ user: { _id: 'test-user' } }}>
-            <BudgetCategoryWidget />
-        </UserContext.Provider>
-    );
+    it('renders the heading and description', () => {
+        renderWidget();
 
-    expect(await screen.findByText('Groceries')).toBeInTheDocument();
-    expect(screen.getByText('40% used')).toBeInTheDocument();
-    expect(screen.getByText(/€120\.00\s*\/\s*€300\.00/)).toBeInTheDocument();
-});
+        expect(screen.getByRole('heading', { name: 'Category budgets' })).toBeInTheDocument();
+        expect(screen.getByText('Monthly spending limits')).toBeInTheDocument();
+    });
 
-test('shows the overspent amount and caps the progress bar at 100%', async () => {
-    const budgets = [
-        { category: 'Groceries', limit: 300 },
-    ];
+    it('renders each budget category with its spent amount and limit', () => {
+        renderWidget();
 
-    const transactions = [
-        { category: 'Groceries', amount: 350 },
-    ];
+        expect(screen.getByText('Groceries')).toBeInTheDocument();
+        expect(screen.getByText('Housing')).toBeInTheDocument();
 
-    vi.stubGlobal('fetch', vi.fn((url) => {
-        const result = String(url).includes('/data/budgets')
-            ? budgets
-            : transactions;
+        expect(screen.getByText('€250.00 / €500.00')).toBeInTheDocument();
+        expect(screen.getByText('€800.00 / €800.00')).toBeInTheDocument();
+    });
 
-        return Promise.resolve({
-            json: () => Promise.resolve(result),
+    it('displays the rounded percentage used for each category', () => {
+        renderWidget();
+
+        expect(screen.getByText('50% used')).toBeInTheDocument();
+        expect(screen.getByText('100% used')).toBeInTheDocument();
+    });
+
+    it('displays the overspend amount and red styling when over budget', () => {
+        useFetch
+            .mockReset()
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', limit: 200 }]
+            })
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', amount: 250, type: 'expense' }]
+            });
+
+        renderWidget();
+
+        expect(screen.getByText('€50.00 over budget')).toBeInTheDocument();
+        expect(screen.getByText('€50.00 over budget')).toHaveClass('text-red-400');
+    });
+
+    it('caps the progress bar width at 100% when over budget', () => {
+        useFetch
+            .mockReset()
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', limit: 200 }]
+            })
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', amount: 250, type: 'expense' }]
+            });
+
+        const { container } = renderWidget();
+
+        const progressBar = container.querySelector('.h-full');
+
+        expect(progressBar).toHaveStyle({ width: '100%' });
+        expect(progressBar).toHaveStyle({ backgroundColor: '#F87171' });
+    });
+
+    it('handles a zero budget limit without displaying an invalid percentage', () => {
+        useFetch
+            .mockReset()
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', limit: 0 }]
+            })
+            .mockReturnValueOnce({
+                data: [{ category: 'Groceries', amount: 50, type: 'expense' }]
+            });
+
+        renderWidget();
+
+        expect(screen.getByText('0% used')).toBeInTheDocument();
+        expect(screen.queryByText(/NaN|Infinity/)).not.toBeInTheDocument();
+    });
+
+    it('passes budgets and remaining budget to the parent callbacks', async () => {
+        renderWidget();
+
+        await waitFor(() => {
+            expect(setBudgets).toHaveBeenCalledWith(budgets);
+            expect(setRemainingBudget).toHaveBeenCalledWith(expect.any(Number));
         });
-    }));
+    });
 
-    render(
-        <UserContext.Provider value={{ user: { _id: 'test-user' } }}>
-            <BudgetCategoryWidget />
-        </UserContext.Provider>
-    );
+    it('renders when parent callbacks are omitted', () => {
+        renderWidget({
+            setBudgets: undefined,
+            setRemainingBudget: undefined
+        });
 
-    expect(
-        await screen.findByText('€50.00 over budget')
-    ).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Category budgets' })).toBeInTheDocument();
+    });
 
-    const progressBar = screen
-        .getByText('€50.00 over budget')
-        .previousElementSibling
-        .firstElementChild;
+    it('requests budgets and transactions for the current user and month', () => {
+        renderWidget({ refreshKey: 7 });
 
-    expect(progressBar).toHaveStyle({ width: '100%' });
-    expect(progressBar).toHaveStyle({ backgroundColor: '#F87171' });
+        const [budgetsCall, transactionsCall] = useFetch.mock.calls;
 
-    expect(screen.queryByText('117% used')).not.toBeInTheDocument();
+        expect(budgetsCall[0]).toEqual([]);
+        expect(budgetsCall[1]).toMatch(/^data\/budgets\?/);
+        expect(budgetsCall[3]).toBe(7);
+
+        expect(transactionsCall[0]).toEqual([]);
+        expect(transactionsCall[1]).toMatch(/^data\/transactions\?/);
+        expect(transactionsCall[1]).toContain('type%3D%22expense%22');
+        expect(transactionsCall[3]).toBe(7);
+    });
 });

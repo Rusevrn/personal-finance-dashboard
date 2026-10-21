@@ -6,7 +6,9 @@ import { useState } from "react";
 
 const Budget = () => {
     const [remainingBudget, setRemainingBudget] = useState();
-    
+    const [budgets, setBudgets] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+
     return (
         <div className="flex flex-col w-full">
 
@@ -17,8 +19,8 @@ const Budget = () => {
 
             <div className="grid grid-cols-6 auto-rows-37.5 grid-flow-row-dense gap-4">
 
-                <AddBudgetWidget />
-                <BudgetCategoryWidget setRemainingBudget={setRemainingBudget} />
+                <AddBudgetWidget budgets={budgets} onBudgetCreated={setRefreshKey} />
+                <BudgetCategoryWidget setRemainingBudget={setRemainingBudget} setBudgets={setBudgets} refreshKey={refreshKey} />
                 <BalanceWidget size='small' />
                 <RemainingBudgetWidget remainder={remainingBudget} />
             </div>

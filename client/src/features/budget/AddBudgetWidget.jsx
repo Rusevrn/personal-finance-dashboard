@@ -1,19 +1,42 @@
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { FiPlus } from "react-icons/fi";
+import useForm from "../../hooks/useForm";
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
+import useFetch from "../../hooks/useFetch";
 
-const AddBudgetWidget = () => {
+const requiredFields = ['category', 'limit'];
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
+const AddBudgetWidget = ({ budgets, onBudgetCreated }) => {
+    const { user: { accessToken } } = useContext(UserContext);
+    const { request } = useFetch();
 
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
-
-        // bruh... you need a user session, you can't post without a token...
-        //const response = await fetch(`http://localhost:3030/data/budgets...`);
-
-        console.log(data)
+    const onBudgetSubmit = async () => {
+        try {
+            if (!budgets.some(budget => budget.category === values.category)) {
+                await request(`data/budgets`, {
+                    method: 'POST',
+                    payload: {
+                        ...values,
+                        limit: Number(values.limit)
+                    },
+                    auth: accessToken
+                })
+            } else {
+                const selectedBudget = budgets.find(budget => budget.category === values.category)
+                await request(`data/budgets/${selectedBudget._id}`, {
+                    method: 'PATCH',
+                    payload: { limit: Number(values.limit) },
+                    auth: accessToken
+                })
+            }
+            onBudgetCreated(budget => budget + 1);
+        } catch (error) {
+            console.log(error.message)
+        }
     };
+
+    const { values, submitAction, getInputProps, errors, submitted } = useForm({ category: '', limit: '' }, requiredFields, onBudgetSubmit);
 
     return (
         <DashWidget size="large">
@@ -21,17 +44,19 @@ const AddBudgetWidget = () => {
                 Add Budget
             </h2>
             <p className="mb-5 text-sm text-white/45">
-                Set a new spending limit for a category
+                Set a <u className="text-white/80">New</u> spending limit for a category
             </p>
 
-            <form className="flex flex-col gap-4" onSubmit={submitHandler}>
+            <form className="flex flex-col gap-4" action={submitAction}>
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="budget-category" className="text-sm text-white/65">Category</label>
                     <select
                         id="budget-category"
-                        name="category"
-                        defaultValue=""
-                        className="rounded-xl border border-white/10 bg-[#252630] px-3 py-2.5 text-sm text-white/70 outline-none focus:border-violet-500"
+                        {...getInputProps('category')}
+                        className={`rounded-xl border ${submitted && errors.category
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-violet-500'
+                            } bg-[#252630] px-3 py-2.5 text-sm text-white/70 outline-none`}
                     >
                         <option value="" disabled>Select category</option>
                         <option>Groceries</option>
@@ -39,7 +64,10 @@ const AddBudgetWidget = () => {
                         <option>Transport</option>
                         <option>Entertainment</option>
                         <option>Dining</option>
-                        <option>Subscriptions</option>
+                        <option>Utilities</option>
+                        <option>Health</option>
+                        <option>Shopping</option>
+
                         <option>Other</option>
                     </select>
                 </div>
@@ -48,12 +76,15 @@ const AddBudgetWidget = () => {
                     <label htmlFor="budget-limit" className="text-sm text-white/65">Monthly limit (€)</label>
                     <input
                         id="budget-limit"
-                        name="limit"
+                        {...getInputProps('limit')}
                         type="number"
                         min="0.01"
                         step="0.01"
                         placeholder="e.g. 250.00"
-                        className="rounded-xl border border-white/10 bg-white/3 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/25 focus:border-violet-500"
+                        className={`rounded-xl border ${submitted && errors.limit
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-violet-500'
+                            } bg-white/3 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/25`}
                     />
                 </div>
 

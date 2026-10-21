@@ -1,204 +1,322 @@
 
-import { afterEach, expect, test, vi } from 'vitest';
-import { cleanup, renderHook, act, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import useAuth from './useAuth';
+import useLocalState from './useLocalState';
+import useFetch from './useFetch';
 
-afterEach(() => {
-    cleanup();
-    localStorage.clear();
-    vi.unstubAllGlobals();
-});
+vi.mock('./useLocalState', () => ({
+    default: vi.fn()
+}));
 
-test('logs in the user and stores their account balance', async () => {
-    const userData = {
-        _id: 'user-123',
-        email: 'peter@example.com',
-        accessToken: 'test-token',
-    };
+vi.mock('./useFetch', () => ({
+    default: vi.fn()
+}));
 
-    const accountData = {
-        openingBalance: 2000,
-    };
+describe('useAuth', () => {
+    let user;
+    let setUser;
+    let clearUser;
+    let request;
 
-    const fetchMock = vi.fn()
-        .mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve(userData),
-        })
-        .mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve([accountData]),
+    beforeEach(() => {
+        vi.clearAllMocks();
+
+        user = {};
+        setUser = vi.fn(updater => {
+            user = typeof updater === 'function' ? updater(user) : updater;
         });
-
-    vi.stubGlobal('fetch', fetchMock);
-
-    const { result } = renderHook(() => useAuth());
-
-    await act(async () => {
-        await result.current.loginHandler({
-            email: 'peter@example.com',
-            password: 'password123',
+        clearUser = vi.fn(() => {
+            user = {};
         });
+        request = vi.fn();
+
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        useFetch.mockReturnValue({ request });
     });
 
-    expect(result.current.user).toEqual({
-        ...userData,
-        balance: 2000,
-    });
+    it('returns the user, auth token, and handlers', () => {
+        const { result } = renderHook(() => useAuth());
 
-    expect(result.current.auth).toBe('test-token');
-    expect(JSON.parse(localStorage.getItem('user'))).toEqual({
-        ...userData,
-        balance: 2000,
-    });
-
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-});
-
-test('rejects login with the server error message', async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve({ message: 'Invalid email or password.' }),
-    });
-
-    vi.stubGlobal('fetch', fetchMock);
-
-    const { result } = renderHook(() => useAuth());
-
-    await expect(
-        act(async () => {
-            await result.current.loginHandler({
-                email: 'peter@example.com',
-                password: 'wrong-password',
-            });
-        })
-    ).rejects.toThrow('Invalid email or password.');
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(localStorage.getItem('user')).toBeNull();
-});
-
-test('rejects login when no account exists for the user', async () => {
-    const userData = {
-        _id: 'user-123',
-        email: 'peter@example.com',
-        accessToken: 'test-token',
-    };
-
-    const fetchMock = vi.fn()
-        .mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve(userData),
-        })
-        .mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve([]),
-        });
-
-    vi.stubGlobal('fetch', fetchMock);
-
-    const { result } = renderHook(() => useAuth());
-
-    await expect(
-        act(async () => {
-            await result.current.loginHandler({
-                email: 'peter@example.com',
-                password: 'password123',
-            });
-        })
-    ).rejects.toThrow('No account found for this user.');
-
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(localStorage.getItem('user')).toBeNull();
-});
-
-test('clears the stored session when validation fails', async () => {
-    const userData = {
-        _id: 'user-123',
-        email: 'peter@example.com',
-        accessToken: 'expired-token',
-        balance: 2000,
-    };
-
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    const fetchMock = vi.fn().mockResolvedValueOnce({
-        ok: false,
-    });
-
-    vi.stubGlobal('fetch', fetchMock);
-
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
-
-    const { result } = renderHook(() => useAuth());
-
-    await waitFor(() => {
         expect(result.current.user).toEqual({});
         expect(result.current.auth).toBeNull();
-        expect(localStorage.getItem('user')).toBeNull();
+        expect(result.current.loginHandler).toBeTypeOf('function');
+        expect(result.current.logoutHandler).toBeTypeOf('function');
+        expect(result.current.balanceUpdate).toBeTypeOf('function');
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:3030/users/me',
-        expect.objectContaining({
-            method: 'GET',
-            headers: expect.objectContaining({
-                'X-authorization': 'expired-token',
-            }),
-        })
-    );
+    it('logs in and stores user data with the existing account balance', async () => {
+        const userData = {
+            _id: 'user-1',
+            accessToken: 'token-1',
+            email: 'test@example.com'
+        };
 
-    consoleSpy.mockRestore();
-});
+        request
+            .mockResolvedValueOnce(userData)
+            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }]);
 
-test('rejects logout when the user is already logged out', async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
+        const { result } = renderHook(() => useAuth());
 
-    const { result } = renderHook(() => useAuth());
+        await act(async () => {
+            await result.current.loginHandler('login', {
+                email: 'test@example.com',
+                password: 'password123'
+            });
+        });
 
-    await expect(
-        result.current.logoutHandler()
-    ).rejects.toThrow('Already logged out.');
+        expect(request).toHaveBeenNthCalledWith(1, 'users/login', {
+            method: 'POST',
+            payload: {
+                email: 'test@example.com',
+                password: 'password123'
+            }
+        });
 
-    expect(fetchMock).not.toHaveBeenCalled();
-});
-test('logs out the user and clears the stored session', async () => {
-    const userData = {
-        _id: 'user-123',
-        email: 'peter@example.com',
-        accessToken: 'test-token',
-        balance: 2000,
-    };
+        expect(request).toHaveBeenNthCalledWith(
+            2,
+            expect.stringMatching(/^data\/accounts\?where=/)
+        );
 
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    const fetchMock = vi.fn()
-        .mockResolvedValueOnce({ ok: true }) // GET /users/me
-        .mockResolvedValueOnce({ ok: true }); // GET /users/logout
-
-    vi.stubGlobal('fetch', fetchMock);
-
-    const { result } = renderHook(() => useAuth());
-
-    await act(async () => {
-        await result.current.logoutHandler();
+        expect(setUser).toHaveBeenCalledWith({
+            ...userData,
+            balance: 2000
+        });
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    it('registers a user, creates an account, and stores the opening balance', async () => {
+        const userData = {
+            _id: 'user-2',
+            accessToken: 'token-2',
+            email: 'new@example.com'
+        };
 
-    expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:3030/users/logout',
-        expect.objectContaining({
-            method: 'GET',
-            headers: expect.objectContaining({
-                'X-authorization': 'test-token',
-            }),
-        })
-    );
+        request
+            .mockResolvedValueOnce(userData)
+            .mockResolvedValueOnce({ _id: 'account-2', openingBalance: 500 });
 
-    expect(result.current.user).toEqual({});
-    expect(result.current.auth).toBeNull();
-    expect(localStorage.getItem('user')).toBeNull();
+        const { result } = renderHook(() => useAuth());
+
+        await act(async () => {
+            await result.current.loginHandler('register', {
+                email: 'new@example.com',
+                password: 'password123',
+                openingBalance: '500'
+            });
+        });
+
+        expect(request).toHaveBeenNthCalledWith(1, 'users/register', {
+            method: 'POST',
+            payload: {
+                email: 'new@example.com',
+                password: 'password123'
+            }
+        });
+
+        expect(request).toHaveBeenNthCalledWith(2, 'data/accounts', {
+            method: 'POST',
+            payload: { openingBalance: 500 },
+            auth: 'token-2'
+        });
+
+        expect(setUser).toHaveBeenCalledWith({
+            ...userData,
+            balance: 500
+        });
+    });
+
+    it('rejects login when already authenticated', async () => {
+        user = { _id: 'user-1', accessToken: 'token-1' };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        const { result } = renderHook(() => useAuth());
+
+        await expect(
+            result.current.loginHandler('login', {
+                email: 'test@example.com',
+                password: 'password123'
+            })
+        ).rejects.toThrow('Already logged in.');
+
+        expect(request).not.toHaveBeenCalled();
+        expect(setUser).not.toHaveBeenCalled();
+    });
+
+    it('does not store a user if login fails', async () => {
+        request.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+        const { result } = renderHook(() => useAuth());
+
+        await expect(
+            result.current.loginHandler('login', {
+                email: 'test@example.com',
+                password: 'wrong-password'
+            })
+        ).rejects.toThrow('Invalid credentials');
+
+        expect(setUser).not.toHaveBeenCalled();
+    });
+
+    it('adds income to the account balance and local user state', async () => {
+        user = { _id: 'user-1', accessToken: 'token-1', balance: 2000 };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        request
+            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockResolvedValueOnce({});
+
+        const { result } = renderHook(() => useAuth());
+
+        await act(async () => {
+            await result.current.balanceUpdate('250.50', 'income');
+        });
+
+        expect(request).toHaveBeenNthCalledWith(
+            2,
+            'data/accounts/account-1',
+            {
+                method: 'PATCH',
+                payload: { openingBalance: 2250.5 },
+                auth: 'token-1'
+            }
+        );
+
+        expect(setUser).toHaveBeenCalledWith(expect.any(Function));
+        expect(user.balance).toBe(2250.5);
+    });
+
+    it('subtracts expenses from the account balance and local user state', async () => {
+        user = { _id: 'user-1', accessToken: 'token-1', balance: 2000 };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        request
+            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockResolvedValueOnce({});
+
+        const { result } = renderHook(() => useAuth());
+
+        await act(async () => {
+            await result.current.balanceUpdate(75, 'expense');
+        });
+
+        expect(request).toHaveBeenNthCalledWith(
+            2,
+            'data/accounts/account-1',
+            {
+                method: 'PATCH',
+                payload: { openingBalance: 1925 },
+                auth: 'token-1'
+            }
+        );
+
+        expect(user.balance).toBe(1925);
+    });
+
+    it('does not update local balance if the account PATCH fails', async () => {
+        user = { _id: 'user-1', accessToken: 'token-1', balance: 2000 };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        request
+            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockRejectedValueOnce(new Error('PATCH failed'));
+
+        const { result } = renderHook(() => useAuth());
+
+        await expect(
+            result.current.balanceUpdate(100, 'expense')
+        ).rejects.toThrow('PATCH failed');
+
+        expect(setUser).not.toHaveBeenCalled();
+        expect(user.balance).toBe(2000);
+    });
+
+    it('rejects logout when already logged out', async () => {
+        const { result } = renderHook(() => useAuth());
+
+        await expect(result.current.logoutHandler())
+            .rejects.toThrow('Already logged out.');
+
+        expect(clearUser).not.toHaveBeenCalled();
+    });
+
+    it('sends the token and clears the user after a successful logout', async () => {
+        user = { _id: 'user-1', accessToken: 'token-1', balance: 2000 };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+            ok: true
+        }));
+
+        const { result } = renderHook(() => useAuth());
+
+        await act(async () => {
+            await result.current.logoutHandler();
+        });
+
+        expect(fetch).toHaveBeenCalledWith(
+            'http://localhost:3030/users/logout',
+            expect.objectContaining({
+                method: 'GET',
+                headers: expect.objectContaining({
+                    'X-authorization': 'token-1'
+                })
+            })
+        );
+
+        expect(clearUser).toHaveBeenCalledOnce();
+    });
+
+    it('clears the user when session validation fails', async () => {
+        user = { _id: 'user-1', accessToken: 'expired-token' };
+        useLocalState.mockImplementation(() => ({
+            state: user,
+            setLocalState: setUser,
+            clearLocalStorage: clearUser
+        }));
+
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+            ok: false
+        }));
+
+        renderHook(() => useAuth());
+
+        await waitFor(() => {
+            expect(clearUser).toHaveBeenCalledOnce();
+        });
+
+        expect(fetch).toHaveBeenCalledWith(
+            'http://localhost:3030/users/me',
+            expect.objectContaining({
+                method: 'GET',
+                headers: expect.objectContaining({
+                    'X-authorization': 'expired-token'
+                })
+            })
+        );
+    });
 });

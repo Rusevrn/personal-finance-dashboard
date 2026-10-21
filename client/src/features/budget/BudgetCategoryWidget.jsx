@@ -3,13 +3,18 @@ import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { useEffect } from "react";
 import UserContext from "../../context/UserContext";
 import { calculateBudgets } from "../../utils/calculateBudgets";
+import useFetch from "../../hooks/useFetch";
 
 const categoryColors = {
     Groceries: "#8B5CF6",
     Housing: "#6366F1",
     Transport: "#06B6D4",
-    Entertainment: "#F59E0B",
+    Utilities: "#38BDF8",
     Dining: "#F472B6",
+    Shopping: "#FB923C",
+    Health: "#4ADE80",
+    Entertainment: "#F59E0B",
+    Other: "#808080"
 };
 
 const formatCurrency = (value) =>
@@ -18,30 +23,28 @@ const formatCurrency = (value) =>
         currency: "EUR",
     }).format(value);
 
-const BudgetCategoryWidget = ({ setRemainingBudget }) => {
-    const [data, setData] = useState([]);
-    const [transactions, setTransactions] = useState([]);
+const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) => {
     const { user: { _id } } = useContext(UserContext);
-
+    const today = new Date();
+    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
     const urlSearchParamsTransactions = new URLSearchParams({
-        where: `month="2026-10" AND type="expense" AND _ownerId="${_id}"`
+        where: `month="${currentMonth}" AND type="expense" AND _ownerId="${_id}"`
+    });
+    const urlSearchParamsBudgets = new URLSearchParams({
+        where: `_ownerId="${_id}"`
     });
 
-    useEffect(() => {
-        fetch('http://localhost:3030/data/budgets')
-            .then(res => res.json())
-            .then(result => setData(result));
+    const { data: budgets } = useFetch([], `data/budgets?${urlSearchParamsBudgets}`, null, refreshKey);
+    const { data: transactions } = useFetch([], `data/transactions?${urlSearchParamsTransactions}`, null, refreshKey);
 
-        fetch(`http://localhost:3030/data/transactions?${urlSearchParamsTransactions}`)
-            .then(res => res.json())
-            .then(result => setTransactions(result));
-    }, [])
-
-    const { budgetsWithSpent, remainingBudget } = calculateBudgets(data, transactions);
+    const { budgetsWithSpent, remainingBudget } = calculateBudgets(budgets, transactions);
 
     useEffect(() => {
+        if (setBudgets) {
+            setBudgets(budgets)
+        }
         if (setRemainingBudget) setRemainingBudget(remainingBudget);
-    }, [remainingBudget, setRemainingBudget]);
+    }, [remainingBudget, setRemainingBudget, budgets]);
 
     return (
         <DashWidget size="xl">
@@ -52,7 +55,7 @@ const BudgetCategoryWidget = ({ setRemainingBudget }) => {
                 Monthly spending limits
             </p>
 
-            <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
                 {budgetsWithSpent.map((budget) => {
                     const color = categoryColors[budget.category];
                     const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;

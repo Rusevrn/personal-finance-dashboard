@@ -1,7 +1,10 @@
+import { useContext } from 'react';
 import { FiLogOut } from 'react-icons/fi'
 import { Link } from 'react-router';
+import UserContext from '../../context/UserContext';
 
 const Sidebar = () => {
+    const { logoutHandler } = useContext(UserContext);
 
     const buttonStyle = "block w-full rounded-xl px-3 py-2.5 text-left text-base text-gray-300 transition hover:bg-white/[0.04] hover:text-white"
     return (
@@ -15,7 +18,7 @@ const Sidebar = () => {
                 <Link to={'/app/expenses'} className={`${buttonStyle}`}>Expenses</Link>
                 <Link to={'/app/budgets'} className={`${buttonStyle}`}>Budgets</Link>
             </div>
-            <Link to={'/'} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-base text-gray-300 transition hover:bg-white/4 hover:text-white">
+            <Link to={'/'} onClick={logoutHandler} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-base text-gray-300 transition hover:bg-white/4 hover:text-white">
                 <FiLogOut className="text-lg" />
                 <span>Log out</span>
             </Link>

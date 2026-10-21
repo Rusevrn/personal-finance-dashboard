@@ -1,48 +1,74 @@
 import { useEffect } from "react";
 import useLocalState from "./useLocalState";
+import useFetch from "./useFetch";
 
 export default function useAuth() {
     const { state: user, setLocalState: setUser, clearLocalStorage: clearUser } = useLocalState({}, 'user');
+    const { request } = useFetch();
 
-    const loginHandler = async (values) => {
-        if (user.accessToken) {
-            throw new Error('Already logged in.');
-        }
-
-        const userResponse = await fetch(`http://localhost:3030/users/login`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(values)
+    const balanceUpdate = async (amount, type) => {
+        const urlSearchParamsAccount = new URLSearchParams({
+            where: `_ownerId="${user._id}"`
         });
 
-        const userData = await userResponse.json();
+        const accounts = await request(`data/accounts?${urlSearchParamsAccount}`);
+        const [account] = accounts;
 
-        if (!userResponse.ok) {
-            throw new Error(userData.message || 'Login failed.');
-        };
+        const currentBalance = Number(account.openingBalance);
+        const transactionAmount = Number(amount);
 
+        const newBalance = type === 'income'
+            ? currentBalance + transactionAmount
+            : currentBalance - transactionAmount;
+
+        await request(`data/accounts/${account._id}`, {
+            method: 'PATCH',
+            payload: { openingBalance: newBalance },
+            auth: user.accessToken
+        });
+
+        setUser(previousUser => ({
+            ...previousUser,
+            balance: newBalance
+        }));
+    };
+
+
+    const createAccount = async (userData, values) => {
+        const response = await request(`data/accounts`,
+            {
+                method: 'POST',
+                payload: {
+                    openingBalance: Number(values.openingBalance)
+                },
+                auth: userData.accessToken
+            }
+        );
+
+        return response;
+    }
+
+    const getAccount = async (userData) => {
         const urlSearchParamsAccount = new URLSearchParams({
             where: `_ownerId="${userData._id}"`
         });
 
-        const accountResponse = await fetch(`http://localhost:3030/data/accounts?${urlSearchParamsAccount}`, {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
+        const response = await request(`data/accounts?${urlSearchParamsAccount}`);
 
-        if (!accountResponse.ok) {
-            throw new Error('Failed to fetch account.');
-        };
+        const [accountData] = response;
 
-        const [accountData] = await accountResponse.json();
+        return accountData;
+    }
 
-        if (!accountData) {
-            throw new Error('No account found for this user.');
-        };
+    const loginHandler = async (action, values) => {
+        if (user.accessToken) {
+            throw new Error('Already logged in.');
+        }
+
+        const response = await request(`users/${action}`, { method: 'POST', payload: { email: values.email, password: values.password } })
+        const userData = response;
+
+        const accountData = action === 'login' ? await getAccount(userData) : await createAccount(userData, values)
 
         setUser({
             ...userData,
@@ -91,5 +117,5 @@ export default function useAuth() {
 
     }, [])
 
-    return { user, loginHandler, logoutHandler, auth: user.accessToken ?? null };
+    return { user, loginHandler, logoutHandler, auth: user.accessToken ?? null, balanceUpdate };
 }

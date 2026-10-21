@@ -26,7 +26,7 @@ const TransactionsWidget = ({ title, data }) => {
                 <div className="min-h-0 flex-1 overflow-y-auto">
                     {visibleTransactions.map((transaction) => (
                         <TransactionItem
-                            key={transaction.id}
+                            key={transaction._id}
                             merchant={transaction.merchant}
                             category={transaction.category}
                             date={transaction.date}

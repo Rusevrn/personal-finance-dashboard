@@ -3,9 +3,14 @@ import { widgetRegistry } from "../../components/app-components/widgets/widgetRe
 import { getTotalWeight, getWidgetWeight } from "../../utils/widgetUtils";
 import { VscSettings } from "react-icons/vsc";
 import ManageWidgetsModal from "../../components/app-components/widgets/ManageWidgetsModal";
+import useLocalState from "../../hooks/useLocalState";
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
 
 const DashboardOverview = () => {
-    const [activeWidgets, setActiveWidgets] = useState(Object.keys(widgetRegistry));
+    const { user: { _id } } = useContext(UserContext);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const { state: activeWidgets, setLocalState: setActiveWidgets } = useLocalState([], _id);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [widgetLimitMessage, setWidgetLimitMessage] = useState('');
 
@@ -19,7 +24,7 @@ const DashboardOverview = () => {
 
     const sectionLimits = {
         overview: 12,
-        activity: 6,
+        activity: 8,
     };
 
     const modalHandler = (activeWidgetKey) => {
@@ -72,7 +77,7 @@ const DashboardOverview = () => {
 
                         const Widget = widget.component;
 
-                        return <Widget key={activeWidgetKey} size={widget.size} />
+                        return <Widget key={activeWidgetKey} refreshKey={refreshKey} size={widget.size} />
                     })}
                 </div>
 
@@ -99,7 +104,7 @@ const DashboardOverview = () => {
 
                         const Widget = widget.component;
 
-                        return <Widget key={activeWidgetKey} size={widget.size} />
+                        return <Widget key={activeWidgetKey} refreshKey={refreshKey} onTransactionCreated={setRefreshKey} size={widget.size} />
                     })}
                 </div>
 

@@ -1,26 +1,21 @@
+import { useContext, useState } from "react";
+import UserContext from "../../context/UserContext";
 import IncomeWidget from "../features-widgets/IncomeWidget";
 import OverTimeWidget from "../features-widgets/OverTimeWidget";
 import TransactionFormWidget from "../features-widgets/TransactionFormWidget";
 import TransactionsWidget from "../features-widgets/TransactionsWidget";
-
-const incomeData = [
-    { month: "August", amount: 1240.5 },
-    { month: "September", amount: 1085.75 },
-    { month: "October", amount: 1320.2 },
-];
-
-const income = [
-    { id: 1, merchant: "Monthly Salary", category: "Salary", date: "Oct 12", type:'income', amount: 2450.00 },
-    { id: 2, merchant: "Freelance Project", category: "Freelance", date: "Oct 10", type:'income', amount: 350.00 },
-    { id: 3, merchant: "Amazon", category: "Refund", date: "Oct 9", type:'income', amount: 42.80 },
-    { id: 4, merchant: "Dividend Payment", category: "Investments", date: "Oct 7", type:'income', amount: 68.50 },
-    { id: 5, merchant: "Website Design", category: "Freelance", date: "Oct 5", type:'income',  amount: 180.00 },
-    { id: 6, merchant: "Monthly Salary", category: "Salary", date: "Sep 12", type:'income',  amount: 2450.00 },
-    { id: 7, merchant: "Freelance Project", category: "Freelance", date: "Sep 8", type:'income', amount: 275.00 },
-    { id: 8, merchant: "Dividend Payment", category: "Investments", date: "Sep 3",type:'income', amount: 54.25 },
-];
+import useFetch from "../../hooks/useFetch";
+import getThreeMonthsTransactionTotals from "../../utils/getThreeMonthsTransactionTotals";
 
 const Income = () => {
+    const { user: { _id } } = useContext(UserContext);
+    const urlSearchParamsExpenseTransactions = new URLSearchParams({
+        where: `type="income" AND _ownerId="${_id}"`,
+        sortBy: 'date desc'
+    });
+    const [refreshKey, setRefreshKey] = useState();
+    const { data: income } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, refreshKey);
+    const { monthlyData: incomeData } = getThreeMonthsTransactionTotals(income);
 
     return (
         <div className="flex flex-col w-full">
@@ -38,8 +33,8 @@ const Income = () => {
                     data={incomeData}
                     toolTipLabel={'Earned'}
                 />
-                <IncomeWidget size={'small'} />
-                <TransactionFormWidget transactionType={'Income'}/>
+                <IncomeWidget size={'small'} refreshKey={refreshKey} />
+                <TransactionFormWidget transactionType={'income'} onTransactionCreated={setRefreshKey} />
             </div>
 
         </div>

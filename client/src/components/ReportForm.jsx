@@ -1,12 +1,34 @@
 import { useState } from "react";
 import { FaBug } from "react-icons/fa";
 import { RiLightbulbFlashFill } from "react-icons/ri";
+import useForm from "../hooks/useForm";
+import useFetch from "../hooks/useFetch";
+import { useNavigate } from "react-router";
+
+const requiredFields = ['subject', 'description'];
 
 const ReportForm = () => {
     const [isBugReport, setIsBugReport] = useState(true);
+    const { request } = useFetch();
+    const navigate = useNavigate();
+
+    const onReportSubmit = async () => {
+        try {
+            const response = await request(`jsonstore/reports`, { method: 'POST', payload: { ...values } });
+            console.log(await response);
+        } catch (error) {
+            console.log(error.message)
+        }
+        navigate(-1);
+    }
+    const { values, getInputProps, submitAction, touched, errors, submitted } = useForm(
+        { subject: '', description: '', reproductionSteps: '' },
+        requiredFields,
+        onReportSubmit
+    );
 
     return (
-        <form className="space-y-5">
+        <form className="space-y-5" action={submitAction}>
             <fieldset className="space-y-3">
                 <legend className="mb-1.5 text-sm font-medium text-gray-200">
                     What would you like to tell us?
@@ -18,11 +40,11 @@ const ReportForm = () => {
                         onClick={() => setIsBugReport(true)}
                         aria-pressed={isBugReport}
                         className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${isBugReport
-                                ? "border-violet-400/60 bg-violet-500/10"
-                                : "border-white/10 bg-[#1f2028] hover:border-white/20"
+                            ? "border-violet-400/60 bg-violet-500/10"
+                            : "border-white/10 bg-[#1f2028] hover:border-white/20"
                             }`}
                     >
-                        <FaBug className={`shrink-0 text-xl ${isBugReport ? "text-violet-300" : "text-gray-400"}`}/>
+                        <FaBug className={`shrink-0 text-xl ${isBugReport ? "text-violet-300" : "text-gray-400"}`} />
                         <div>
                             <p className="text-sm font-medium text-white">Report a bug</p>
                             <p className="mt-1 text-xs text-gray-400">
@@ -36,11 +58,11 @@ const ReportForm = () => {
                         onClick={() => setIsBugReport(false)}
                         aria-pressed={!isBugReport}
                         className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${!isBugReport
-                                ? "border-violet-400/60 bg-violet-500/10"
-                                : "border-white/10 bg-[#1f2028] hover:border-white/20"
+                            ? "border-violet-400/60 bg-violet-500/10"
+                            : "border-white/10 bg-[#1f2028] hover:border-white/20"
                             }`}
                     >
-                        <RiLightbulbFlashFill className={`shrink-0 text-xl ${!isBugReport ? "text-violet-300" : "text-gray-400"}`}/>
+                        <RiLightbulbFlashFill className={`shrink-0 text-xl ${!isBugReport ? "text-violet-300" : "text-gray-400"}`} />
                         <div>
                             <p className="text-sm font-medium text-white">
                                 Request a feature
@@ -62,9 +84,8 @@ const ReportForm = () => {
                 </label>
                 <input
                     id="report-subject"
-                    name="subject"
+                    {...getInputProps('subject')}
                     type="text"
-                    required
                     maxLength={120}
                     placeholder={
                         isBugReport
@@ -84,8 +105,7 @@ const ReportForm = () => {
                 </label>
                 <textarea
                     id="report-description"
-                    name="description"
-                    required
+                    {...getInputProps('description')}
                     maxLength={5000}
                     rows={5}
                     placeholder={
@@ -110,7 +130,7 @@ const ReportForm = () => {
                     </label>
                     <textarea
                         id="reproduction-steps"
-                        name="reproductionSteps"
+                        {...getInputProps('reproductionSteps')}
                         maxLength={3000}
                         rows={3}
                         placeholder={

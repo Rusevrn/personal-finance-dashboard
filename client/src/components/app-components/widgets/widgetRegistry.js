@@ -9,6 +9,38 @@ import BudgetCategoryWidget from '../../../features/budget/BudgetCategoryWidget'
 
 export const widgetRegistry = {
 
+    recentTransactions: {
+        key: 'recentTransactions',
+        label: 'Recent transactions',
+        description: 'Track your recent transactions.',
+        component: RecentTransactions,
+        size: 'large',
+        section: 'activity',
+    },
+    spendingByCategoryWidget: {
+        key: 'spendingByCategoryWidget',
+        label: 'Spending by category',
+        description: 'Track your spendings by category.',
+        component: SpendingByCategoryWidget,
+        size: 'large',
+        section: 'overview',
+    },
+    transactionFormWidget: {
+        key: 'transactionFormWidget',
+        label: 'Transaction form',
+        description: 'Add any type of transaction.',
+        component: TransactionFormWidget,
+        size: 'large',
+        section: 'activity',
+    },
+    budgetCategoryWidget: {
+        key: 'budgetCategoryWidget',
+        label: 'Budget category',
+        description: 'Track your allowed budgets.',
+        component: BudgetCategoryWidget,
+        size: 'large',
+        section: 'overview',
+    },
     balanceWidget: {
         key: 'balanceWidget',
         label: 'Balance',
@@ -41,38 +73,6 @@ export const widgetRegistry = {
         size: 'large',
         section: 'overview',
     },
-    recentTransactions: {
-        key: 'recentTransactions',
-        label: 'Recent transactions',
-        description: 'Track your recent transactions.',
-        component: RecentTransactions,
-        size: 'large',
-        section: 'activity',
-    },
-    spendingByCategoryWidget: {
-        key: 'spendingByCategoryWidget',
-        label: 'Spending by category',
-        description: 'Track your spendings by category.',
-        component: SpendingByCategoryWidget,
-        size: 'large',
-        section: 'overview',
-    },
-    transactionFormWidget: {
-        key: 'transactionFormWidget',
-        label: 'Transaction form',
-        description: 'Add any type of transaction.',
-        component: TransactionFormWidget,
-        size: 'large',
-        section: 'activity',
-    },
-    budgetCategoryWidget: {
-        key: 'budgetCategoryWidget',
-        label: 'Budget category',
-        description: 'Track your allowed budgets.',
-        component: BudgetCategoryWidget,
-        size: 'large',
-        section: 'overview',
-    }
 
 
 };
