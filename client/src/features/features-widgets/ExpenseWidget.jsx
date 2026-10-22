@@ -1,21 +1,11 @@
-import { useContext, useEffect, useState } from "react";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
-import UserContext from "../../context/UserContext";
-import useFetch from "../../hooks/useFetch";
+import useMonthlyTransactions from "../../hooks/useMonthlyTransactions";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const ExpenseWidget = ({ size, refreshKey }) => {
-    const { user: { _id } } = useContext(UserContext);
-    const today = new Date();
-    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-    const urlSearchParamsExpenseTransactions = new URLSearchParams({
-        where: `type="expense" AND _ownerId="${_id}" AND month="${currentMonth}"`
-    });
-    const { data: transactions } = useFetch([],`data/transactions?${urlSearchParamsExpenseTransactions}`, null, refreshKey );
+    const { transactions } = useMonthlyTransactions('expense', refreshKey);
 
-    const total = transactions.reduce(
-        (sum, transaction) => sum + transaction.amount,
-        0
-    );
+    const total = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
 
     return (
         <DashWidget size={size} type='expense'>
@@ -23,7 +13,7 @@ const ExpenseWidget = ({ size, refreshKey }) => {
                 <p className="text-sm text-gray-400">Expenses /m</p>
 
                 <p className="text-2xl font-semibold text-red-400">
-                    -€{total}
+                    -{formatCurrency(total)}
                 </p>
             </div>
         </DashWidget>

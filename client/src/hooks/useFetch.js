@@ -42,34 +42,7 @@ export default function useFetch(initialState, url, transformData, refreshKey) {
 
         return await response.json();
     }, [])
-    /* my hook
-        useEffect(() => {
-            setIsLoading(true);
-            setError(null);
-    
-            if (!url) {
-                setIsLoading(false)
-                return
-            }
-    
-            const abortController = new AbortController;
-    
-            request(url, { signal: abortController.signal })
-                .then(result => {
-                    setData(transformData ? transformData(result) : result)
-                })
-                .catch(error => {
-                    if (error.name !== 'AbortError') {
-                        setError(error)
-                    }
-                })
-                .finally(() => setIsLoading(false));
-    
-            return () => abortController.abort();
-        }, [url, request, transformData, refreshKey])
-    
-        return { data, setData, isLoading, error, request }
-        */
+
     useEffect(() => {
         let isActive = true;
 
@@ -107,5 +80,6 @@ export default function useFetch(initialState, url, transformData, refreshKey) {
             abortController.abort();
         };
     }, [url, request, transformData, refreshKey]);
+
     return { data, setData, isLoading, error, request }
 }

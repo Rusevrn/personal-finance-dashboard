@@ -10,24 +10,24 @@ import useFetch from "../../hooks/useFetch";
 
 const requiredFields = ['amount', 'category', 'date'];
 
+const initialValues = {
+    merchant: '',
+    amount: '',
+    type: '',
+    date: '',
+    month: ``,
+    category: ''
+}
+
 const TransactionFormWidget = ({ transactionType, onTransactionCreated }) => {
     const { section } = useParams();
-    const { user: { accessToken, balance }, balanceUpdate } = useContext(UserContext);
+    const { user: { accessToken, balance }, updateBalance } = useContext(UserContext);
     const { request } = useFetch();
     const [action, setAction] = useState(
         section === 'expenses'
             ? 'expense'
             : section ?? transactionType ?? 'income'
     );
-
-    const initialValues = {
-        merchant: '',
-        amount: '',
-        type: '',
-        date: '',
-        month: ``,
-        category: ''
-    }
 
     const onTransactionSubmit = async () => {
         try {
@@ -46,7 +46,7 @@ const TransactionFormWidget = ({ transactionType, onTransactionCreated }) => {
             })
 
             try {
-                await balanceUpdate(values.amount, action);
+                await updateBalance(values.amount, action);
             } catch (error) {
                 console.log('Transaction was saved but your balance could not be updated.')
             }

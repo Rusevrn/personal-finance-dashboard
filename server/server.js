@@ -1395,14 +1395,14 @@
                 "_ownerId": "35c62d76-8152-4626-8712-eeb96381bea8",
                 "_createdOn": 1791979200001,
                 "name": "Peter",
-                "openingBalance": 2000,
+                "currentBalance": 2000,
             },
             "f3b82a71-9c46-4d05-ae28-7b1c6f903d52": {
                 "_id": "f3b82a71-9c46-4d05-ae28-7b1c6f903d52",
                 "_ownerId": "847ec027-f659-4086-8032-5173e2f9c93a",
                 "_createdOn": 1791979200001,
                 "name": "George",
-                "openingBalance": 2000,
+                "currentBalance": 2000,
             },
         },
         transactions: {

@@ -10,7 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
     const [action, setAction] = useState('login');
 
-    const requiredFields = action === 'login' ? ['email', 'password'] : ['email', 'password', 'openingBalance'];
+    const requiredFields = action === 'login' ? ['email', 'password'] : ['email', 'password', 'currentBalance'];
 
     const onLogin = async () => {
         try {
@@ -21,7 +21,7 @@ const Login = () => {
         }
     };
 
-    const { values, submitAction, getInputProps, touched, errors, submitted, } = useForm({ email: '', password: '', openingBalance: '' }, requiredFields, onLogin);
+    const { values, submitAction, getInputProps, touched, errors, submitted, } = useForm({ email: '', password: '', currentBalance: '' }, requiredFields, onLogin);
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#1f2028] px-4 py-10 pb-30">
@@ -78,15 +78,15 @@ const Login = () => {
                                     <input
                                         id="balance"
                                         type="number"
-                                        {...getInputProps('openingBalance')}
+                                        {...getInputProps('currentBalance')}
                                         placeholder="Enter your balance"
                                         className="w-full bg-transparent px-3 py-3 text-sm text-white outline-none placeholder:text-[#777483]"
                                     />
                                 </div>
                             </div>
-                            {(touched.openingBalance || submitted) && errors.openingBalance && (
+                            {(touched.currentBalance || submitted) && errors.currentBalance && (
                                 <p role="alert" className="mt-4 rounded-lg border border-red-400/20 bg-red-400/5 px-3 py-2 text-sm text-red-300">
-                                    {errors.openingBalance}
+                                    {errors.currentBalance}
                                 </p>
                             )}
                         </>

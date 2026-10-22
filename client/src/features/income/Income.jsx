@@ -13,8 +13,8 @@ const Income = () => {
         where: `type="income" AND _ownerId="${_id}"`,
         sortBy: 'date desc'
     });
-    const [refreshKey, setRefreshKey] = useState();
-    const { data: income } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, refreshKey);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const { data: income } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, null, refreshKey);
     const { monthlyData: incomeData } = getThreeMonthsTransactionTotals(income);
 
     return (

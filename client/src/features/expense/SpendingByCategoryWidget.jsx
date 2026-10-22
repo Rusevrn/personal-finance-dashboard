@@ -1,34 +1,11 @@
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Sector } from "recharts";
-import useFetch from "../../hooks/useFetch";
-import { useContext } from "react";
-import UserContext from "../../context/UserContext";
-
-const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-IE", {
-        style: "currency",
-        currency: "EUR",
-    }).format(value);
-
-const categoryColors = {
-    Groceries: "#8B5CF6",
-    Housing: "#6366F1",
-    Transport: "#06B6D4",
-    Utilities: "#38BDF8",
-    Dining: "#F472B6",
-    Shopping: "#FB923C",
-    Health: "#4ADE80",
-    Entertainment: "#F59E0B",
-};
+import { formatCurrency } from "../../utils/formatCurrency";
+import { categoryColors } from "../../utils/categoryColors";
+import useMonthlyTransactions from "../../hooks/useMonthlyTransactions";
 
 const SpendingByCategoryWidget = ({ refreshKey }) => {
-    const { user: { _id } } = useContext(UserContext);
-    const today = new Date();
-    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-    const urlSearchParamsExpenseTransactions = new URLSearchParams({
-        where: `type="expense" AND _ownerId="${_id}" AND month="${currentMonth}"`
-    });
-    const { data: transactions } = useFetch([], `data/transactions?${urlSearchParamsExpenseTransactions}`, null, refreshKey);
+    const { transactions } = useMonthlyTransactions('expense', refreshKey);
 
     const totals = transactions.reduce((acc, transaction) => {
         const category = transaction.category;
@@ -63,8 +40,8 @@ const SpendingByCategoryWidget = ({ refreshKey }) => {
                     This month's expenses.
 
                 </p>
-                <p className="mb-4 text-sm  ml-1 text-white/45 flex gap-1">
-                    Total: <b className="text-violet-400">€{total}</b>
+                <p className="mb-4 text-sm ml-1 text-white/45 flex gap-1">
+                    Total: <b className="text-violet-400">{formatCurrency(total)}</b>
                 </p>
             </div>
 

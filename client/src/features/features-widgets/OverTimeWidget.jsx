@@ -1,11 +1,6 @@
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
-
-const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-IE", {
-        style: "currency",
-        currency: "EUR",
-    }).format(value);
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const OverTimeWidget = ({ title, description, data, toolTipLabel }) => {
 

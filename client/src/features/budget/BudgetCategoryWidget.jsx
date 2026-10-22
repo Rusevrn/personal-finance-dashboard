@@ -1,41 +1,20 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import DashWidget from "../../components/app-components/widgets/DashWidget";
 import { useEffect } from "react";
 import UserContext from "../../context/UserContext";
 import { calculateBudgets } from "../../utils/calculateBudgets";
 import useFetch from "../../hooks/useFetch";
-
-const categoryColors = {
-    Groceries: "#8B5CF6",
-    Housing: "#6366F1",
-    Transport: "#06B6D4",
-    Utilities: "#38BDF8",
-    Dining: "#F472B6",
-    Shopping: "#FB923C",
-    Health: "#4ADE80",
-    Entertainment: "#F59E0B",
-    Other: "#808080"
-};
-
-const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-IE", {
-        style: "currency",
-        currency: "EUR",
-    }).format(value);
+import useMonthlyTransactions from "../../hooks/useMonthlyTransactions";
+import { categoryColors } from "../../utils/categoryColors";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) => {
     const { user: { _id } } = useContext(UserContext);
-    const today = new Date();
-    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-    const urlSearchParamsTransactions = new URLSearchParams({
-        where: `month="${currentMonth}" AND type="expense" AND _ownerId="${_id}"`
-    });
     const urlSearchParamsBudgets = new URLSearchParams({
         where: `_ownerId="${_id}"`
     });
-
     const { data: budgets } = useFetch([], `data/budgets?${urlSearchParamsBudgets}`, null, refreshKey);
-    const { data: transactions } = useFetch([], `data/transactions?${urlSearchParamsTransactions}`, null, refreshKey);
+    const { transactions } = useMonthlyTransactions('expense', refreshKey);
 
     const { budgetsWithSpent, remainingBudget } = calculateBudgets(budgets, transactions);
 
@@ -82,12 +61,12 @@ const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) =>
                                 />
                             </div>
 
-                            {<p className={`mt-1.5 text-xs ${overBudget ? "text-red-400" : "text-white/35"
+                            <p className={`mt-1.5 text-xs ${overBudget ? "text-red-400" : "text-white/35"
                                 }`}>
                                 {overBudget
                                     ? `${formatCurrency(budget.spent - budget.limit)} over budget`
                                     : `${Math.round(percentage)}% used`}
-                            </p>}
+                            </p>
                         </div>
                     );
                 })}

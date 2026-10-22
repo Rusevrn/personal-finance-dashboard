@@ -59,7 +59,7 @@ describe('useAuth', () => {
 
         request
             .mockResolvedValueOnce(userData)
-            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }]);
+            .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }]);
 
         const { result } = renderHook(() => useAuth());
 
@@ -98,7 +98,7 @@ describe('useAuth', () => {
 
         request
             .mockResolvedValueOnce(userData)
-            .mockResolvedValueOnce({ _id: 'account-2', openingBalance: 500 });
+            .mockResolvedValueOnce({ _id: 'account-2', currentBalance: 500 });
 
         const { result } = renderHook(() => useAuth());
 
@@ -106,7 +106,7 @@ describe('useAuth', () => {
             await result.current.loginHandler('register', {
                 email: 'new@example.com',
                 password: 'password123',
-                openingBalance: '500'
+                currentBalance: '500'
             });
         });
 
@@ -120,7 +120,7 @@ describe('useAuth', () => {
 
         expect(request).toHaveBeenNthCalledWith(2, 'data/accounts', {
             method: 'POST',
-            payload: { openingBalance: 500 },
+            payload: { currentBalance: 500 },
             auth: 'token-2'
         });
 
@@ -175,7 +175,7 @@ describe('useAuth', () => {
         }));
 
         request
-            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }])
             .mockResolvedValueOnce({});
 
         const { result } = renderHook(() => useAuth());
@@ -189,7 +189,7 @@ describe('useAuth', () => {
             'data/accounts/account-1',
             {
                 method: 'PATCH',
-                payload: { openingBalance: 2250.5 },
+                payload: { currentBalance: 2250.5 },
                 auth: 'token-1'
             }
         );
@@ -207,7 +207,7 @@ describe('useAuth', () => {
         }));
 
         request
-            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }])
             .mockResolvedValueOnce({});
 
         const { result } = renderHook(() => useAuth());
@@ -221,7 +221,7 @@ describe('useAuth', () => {
             'data/accounts/account-1',
             {
                 method: 'PATCH',
-                payload: { openingBalance: 1925 },
+                payload: { currentBalance: 1925 },
                 auth: 'token-1'
             }
         );
@@ -238,7 +238,7 @@ describe('useAuth', () => {
         }));
 
         request
-            .mockResolvedValueOnce([{ _id: 'account-1', openingBalance: 2000 }])
+            .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }])
             .mockRejectedValueOnce(new Error('PATCH failed'));
 
         const { result } = renderHook(() => useAuth());

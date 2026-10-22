@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import useLocalState from "./useLocalState";
 import useFetch from "./useFetch";
+import { useState } from "react";
 
 export default function useAuth() {
     const { state: user, setLocalState: setUser, clearLocalStorage: clearUser } = useLocalState({}, 'user');
     const { request } = useFetch();
+    const [isCheckingSession, setIsCheckingSession] = useState(() => {
+        return user.accessToken ? true : false
+    });
 
-    const balanceUpdate = async (amount, type) => {
+    const updateBalance = async (amount, type) => {
         const urlSearchParamsAccount = new URLSearchParams({
             where: `_ownerId="${user._id}"`
         });
@@ -14,7 +18,7 @@ export default function useAuth() {
         const accounts = await request(`data/accounts?${urlSearchParamsAccount}`);
         const [account] = accounts;
 
-        const currentBalance = Number(account.openingBalance);
+        const currentBalance = Number(account.currentBalance);
         const transactionAmount = Number(amount);
 
         const newBalance = type === 'income'
@@ -23,7 +27,7 @@ export default function useAuth() {
 
         await request(`data/accounts/${account._id}`, {
             method: 'PATCH',
-            payload: { openingBalance: newBalance },
+            payload: { currentBalance: newBalance },
             auth: user.accessToken
         });
 
@@ -39,7 +43,7 @@ export default function useAuth() {
             {
                 method: 'POST',
                 payload: {
-                    openingBalance: Number(values.openingBalance)
+                    currentBalance: Number(values.currentBalance)
                 },
                 auth: userData.accessToken
             }
@@ -72,7 +76,7 @@ export default function useAuth() {
 
         setUser({
             ...userData,
-            balance: accountData.openingBalance
+            balance: accountData.currentBalance
         });
     };
 
@@ -80,16 +84,13 @@ export default function useAuth() {
         if (!user.accessToken) {
             throw new Error('Already logged out.')
         }
-
-        await fetch('http://localhost:3030/users/logout', {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json',
-                'X-authorization': user.accessToken
-            }
-        });
-
-        clearUser();
+        try {
+            await request('users/logout', { auth: user.accessToken });
+        } catch (error) {
+            console.log(error.message)
+        } finally {
+            clearUser();
+        }
     };
 
     useEffect(() => {
@@ -97,25 +98,18 @@ export default function useAuth() {
 
         const isLoggedIn = async () => {
             try {
-                const response = await fetch('http://localhost:3030/users/me', {
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json',
-                        'X-authorization': user.accessToken
-                    }
-                });
+                await request('users/me', { auth: user.accessToken });
 
-                if (!response.ok) {
-                    throw new Error('Session validation failed.');
-                }
             } catch (error) {
                 clearUser();
                 console.log(error.message)
-            };
+            } finally {
+                setIsCheckingSession(false);
+            }
         };
         isLoggedIn();
 
     }, [])
 
-    return { user, loginHandler, logoutHandler, auth: user.accessToken ?? null, balanceUpdate };
+    return { user, loginHandler, logoutHandler, auth: user.accessToken ?? null, updateBalance, isCheckingSession };
 }
