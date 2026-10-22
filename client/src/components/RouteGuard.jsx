@@ -5,10 +5,6 @@ import UserContext from "../context/UserContext";
 export default function RouteGuard() {
     const { user: { _id: id }, isCheckingSession } = useContext(UserContext);
 
-    if (!id && !isCheckingSession) {
-        return <Navigate to={'/login'} replace/>
-    }
-
     if (isCheckingSession) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-950">
@@ -18,9 +14,11 @@ export default function RouteGuard() {
         );
     }
 
-    if (id && isCheckingSession) {
-        return (
-            <Outlet />
-        )
+    if (!id) {
+        return <Navigate to={'/login'} replace />
     }
+
+    return (
+        <Outlet />
+    )
 }

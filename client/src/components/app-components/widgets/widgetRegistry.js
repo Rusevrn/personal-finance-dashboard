@@ -38,7 +38,7 @@ export const widgetRegistry = {
         label: 'Budget category',
         description: 'Track your allowed budgets.',
         component: BudgetCategoryWidget,
-        size: 'large',
+        size: 'wide',
         section: 'overview',
     },
     balanceWidget: {

@@ -5,7 +5,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 const OverTimeWidget = ({ title, description, data, toolTipLabel }) => {
 
     return (
-        <DashWidget size='wide'>
+        <DashWidget size='wideThin'>
             <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
 
                 <div className="min-w-0">

@@ -23,7 +23,7 @@ const DashboardOverview = () => {
     };
 
     const sectionLimits = {
-        overview: 12,
+        overview: 16,
         activity: 8,
     };
 

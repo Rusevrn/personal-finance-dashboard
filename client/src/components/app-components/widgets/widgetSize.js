@@ -14,10 +14,15 @@ export const widgetSize = {
         columns: 2,
         rows: 2
     },
-    wide: {
+    wideThin: {
         className: 'col-span-4 row-span-1',
         columns: 4,
         rows: 1
+    },
+    wide: {
+        className: 'col-span-4 row-span-2',
+        columns: 4,
+        rows: 2
     },
     long: {
         className: 'col-span-2 row-span-3',
@@ -32,6 +37,6 @@ export const widgetSize = {
     xl: {
         className: 'col-span-4 row-span-3',
         columns: 4,
-        rows: 4
+        rows: 3
     }
 }

@@ -26,7 +26,7 @@ const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) =>
     }, [remainingBudget, setRemainingBudget, budgets]);
 
     return (
-        <DashWidget size="xl">
+        <DashWidget size="wide">
             <h2 className="mb-1 text-lg font-semibold text-white">
                 Category budgets
             </h2>
@@ -34,7 +34,7 @@ const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) =>
                 Monthly spending limits
             </p>
 
-            <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 @md:grid-cols-2 @2xl:grid-cols-3">
                 {budgetsWithSpent.map((budget) => {
                     const color = categoryColors[budget.category];
                     const percentage = budget.limit > 0 ? (budget.spent / budget.limit) * 100 : 0;
@@ -42,18 +42,18 @@ const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) =>
 
                     return (
                         <div key={budget.category}>
-                            <div className="mb-2 flex items-center justify-between gap-3">
-                                <span className="text-sm text-white/80">
+                            <div className="mb-1.5 flex min-w-0 items-center justify-between gap-2">
+                                <span className="min-w-0 truncate text-sm text-white/80 @md:text-sm">
                                     {budget.category}
                                 </span>
-                                <span className="text-xs text-white/50">
+                                <span className="shrink-0 whitespace-nowrap text-[11px] text-white/50 @md:text-sm">
                                     {formatCurrency(budget.spent)} / {formatCurrency(budget.limit)}
                                 </span>
                             </div>
 
-                            <div className="h-2 overflow-hidden rounded-full bg-white/8">
+                            <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
                                 <div
-                                    className="h-full rounded-full"
+                                    className="h-full rounded-full transition-[width] duration-300"
                                     style={{
                                         width: `${Math.min(percentage, 100)}%`,
                                         backgroundColor: overBudget ? "#F87171" : color,
@@ -61,7 +61,7 @@ const BudgetCategoryWidget = ({ setRemainingBudget, setBudgets, refreshKey }) =>
                                 />
                             </div>
 
-                            <p className={`mt-1.5 text-xs ${overBudget ? "text-red-400" : "text-white/35"
+                            <p className={`mt-1 text-[11px] @md:text-xs ${overBudget ? "text-red-400" : "text-white/35"
                                 }`}>
                                 {overBudget
                                     ? `${formatCurrency(budget.spent - budget.limit)} over budget`
