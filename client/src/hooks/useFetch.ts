@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 
-export default function useFetch(initialState, url, transformData, refreshKey) {
+type RequestOptions = {
+    method?: string;
+    payload?: Record<string, unknown>;
+    auth?: string;
+    signal?: AbortSignal
+}
+
+export default function useFetch<T>(initialState: T, url: string, transformData: ((result: unknown) => T) | null, refreshKey: number) {
     const [data, setData] = useState(initialState);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
 
-    const request = useCallback(async (urlSuffix, { method, payload, auth, signal } = {}) => {
-        let options = {
+    const request = useCallback(async (urlSuffix: string, { method, payload, auth, signal }: RequestOptions = {}): Promise<unknown> => {
+        let options: RequestInit = {
             headers: {}
         };
 
@@ -61,7 +68,7 @@ export default function useFetch(initialState, url, transformData, refreshKey) {
         request(url, { signal: abortController.signal })
             .then(result => {
                 if (isActive) {
-                    setData(transformData ? transformData(result) : result);
+                    setData(transformData ? transformData(result) : result as T);
                 }
             })
             .catch(error => {

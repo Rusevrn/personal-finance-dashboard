@@ -25,7 +25,7 @@ configure({
 
 describe('TransactionFormWidget', () => {
     let request;
-    let balanceUpdate;
+    let updateBalance;
     let onTransactionCreated;
 
     const user = {
@@ -35,7 +35,7 @@ describe('TransactionFormWidget', () => {
 
     const renderWidget = (props = {}, currentUser = user) =>
         render(
-            <UserContext.Provider value={{ user: currentUser, balanceUpdate }}>
+            <UserContext.Provider value={{ user: currentUser, updateBalance }}>
                 <TransactionFormWidget
                     onTransactionCreated={onTransactionCreated}
                     {...props}
@@ -65,7 +65,7 @@ describe('TransactionFormWidget', () => {
         vi.clearAllMocks();
 
         request = vi.fn().mockResolvedValue({});
-        balanceUpdate = vi.fn().mockResolvedValue(undefined);
+        updateBalance = vi.fn().mockResolvedValue(undefined);
         onTransactionCreated = vi.fn();
 
         useParams.mockReturnValue({});
@@ -132,7 +132,7 @@ describe('TransactionFormWidget', () => {
             });
         });
 
-        expect(balanceUpdate).toHaveBeenCalledWith('50.75', 'income');
+        expect(updateBalance).toHaveBeenCalledWith('50.75', 'income');
         expect(onTransactionCreated).toHaveBeenCalledWith(expect.any(Function));
 
         const updateTransactionCount = onTransactionCreated.mock.calls[0][0];
@@ -162,7 +162,7 @@ describe('TransactionFormWidget', () => {
         });
 
         await waitFor(() => {
-            expect(balanceUpdate).toHaveBeenCalledWith('75', 'expense');
+            expect(updateBalance).toHaveBeenCalledWith('75', 'expense');
             expect(onTransactionCreated).toHaveBeenCalledTimes(1);
         });
     });
@@ -175,7 +175,7 @@ describe('TransactionFormWidget', () => {
         submitForm();
 
         await waitFor(() => {
-            expect(balanceUpdate).not.toHaveBeenCalled();
+            expect(updateBalance).not.toHaveBeenCalled();
             expect(onTransactionCreated).not.toHaveBeenCalled();
         });
 
@@ -193,19 +193,19 @@ describe('TransactionFormWidget', () => {
             expect(request).toHaveBeenCalledTimes(1);
         });
 
-        expect(balanceUpdate).not.toHaveBeenCalled();
+        expect(updateBalance).not.toHaveBeenCalled();
         expect(onTransactionCreated).not.toHaveBeenCalled();
     });
 
     it('refreshes transactions even if the balance update fails after saving', async () => {
-        balanceUpdate.mockRejectedValue(new Error('Balance update failed'));
+        updateBalance.mockRejectedValue(new Error('Balance update failed'));
 
         renderWidget();
         fillValidForm('Salary', '50');
         submitForm();
 
         await waitFor(() => {
-            expect(balanceUpdate).toHaveBeenCalledWith('50', 'income');
+            expect(updateBalance).toHaveBeenCalledWith('50', 'income');
             expect(onTransactionCreated).toHaveBeenCalledTimes(1);
         });
 
@@ -221,7 +221,7 @@ describe('TransactionFormWidget', () => {
         });
 
         expect(request).not.toHaveBeenCalled();
-        expect(balanceUpdate).not.toHaveBeenCalled();
+        expect(updateBalance).not.toHaveBeenCalled();
         expect(onTransactionCreated).not.toHaveBeenCalled();
     });
 });

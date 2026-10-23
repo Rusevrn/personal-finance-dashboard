@@ -1,5 +1,17 @@
+type Budget = {
+    category: string;
+    limit: number;
+}
 
-export const calculateBudgets = (budgets, transactions) => {
+type Transaction = {
+    category: string;
+    amount: number;
+}
+
+export const calculateBudgets = (
+    budgets: [Budget, ...Budget[]],
+    transactions: [Transaction, ...Transaction[]]
+) => {
     const budgetsWithSpent = budgets.map((budget) => {
 
         const spent = transactions.filter((transaction) => transaction.category === budget.category)

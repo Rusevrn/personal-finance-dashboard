@@ -1,6 +1,11 @@
-export default function getThreeMonthsTransactionTotals(transactions) {
+type Transaction = {
+    month: string;
+    amount: number;
+}
 
-    const totals = transactions.reduce((acc, transaction) => {
+export default function getThreeMonthsTransactionTotals(transactions: [Transaction, ...[Transaction]]) {
+
+    const totals = transactions.reduce((acc: Record<string, number>, transaction: Transaction) => {
         const monthKey = transaction.month;
 
         if (acc[monthKey] === undefined) {

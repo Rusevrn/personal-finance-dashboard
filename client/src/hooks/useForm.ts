@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FocusEvent } from "react";
 import validateForm from "../utils/validateForm";
 
-export default function useForm(initialValues, requiredFields, onSubmit) {
+type OnSubmit<T> = (values: T) => Promise<void>;
+
+type FormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;  
+
+export default function useForm<T extends Record<string, string>>(initialValues: T, requiredFields: string[], onSubmit: OnSubmit<T>) {
     const [values, setValues] = useState(initialValues);
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [submitted, setSubmitted] = useState(false);
 
-    const getInputProps = (inputFieldName) => {
+    const getInputProps = (inputFieldName: keyof T) => {
         return {
             name: inputFieldName,
             onChange: changeHandler,
@@ -16,7 +20,7 @@ export default function useForm(initialValues, requiredFields, onSubmit) {
         }
     }
 
-    const changeHandler = (event) => {
+    const changeHandler = (event: ChangeEvent<FormElement>) => {
         const { name, value } = event.target;
 
         setValues(values => ({
@@ -25,7 +29,7 @@ export default function useForm(initialValues, requiredFields, onSubmit) {
         }));
     }
 
-    const validationHandler = (event) => {
+    const validationHandler = (event?: FocusEvent<FormElement>) => {
         if (event) {
             setTouched(state => ({
                 ...state,

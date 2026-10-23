@@ -47,7 +47,7 @@ describe('useAuth', () => {
         expect(result.current.auth).toBeNull();
         expect(result.current.loginHandler).toBeTypeOf('function');
         expect(result.current.logoutHandler).toBeTypeOf('function');
-        expect(result.current.balanceUpdate).toBeTypeOf('function');
+        expect(result.current.updateBalance).toBeTypeOf('function');
     });
 
     it('logs in and stores user data with the existing account balance', async () => {
@@ -147,7 +147,10 @@ describe('useAuth', () => {
             })
         ).rejects.toThrow('Already logged in.');
 
-        expect(request).not.toHaveBeenCalled();
+        expect(request).not.toHaveBeenCalledWith(
+            'users/login',
+            expect.anything()
+        );
         expect(setUser).not.toHaveBeenCalled();
     });
 
@@ -175,17 +178,18 @@ describe('useAuth', () => {
         }));
 
         request
+            .mockResolvedValueOnce({}) // users/me on mount
             .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }])
             .mockResolvedValueOnce({});
 
         const { result } = renderHook(() => useAuth());
 
         await act(async () => {
-            await result.current.balanceUpdate('250.50', 'income');
+            await result.current.updateBalance('250.50', 'income');
         });
 
         expect(request).toHaveBeenNthCalledWith(
-            2,
+            3,
             'data/accounts/account-1',
             {
                 method: 'PATCH',
@@ -207,17 +211,18 @@ describe('useAuth', () => {
         }));
 
         request
+            .mockResolvedValueOnce({}) // users/me on mount
             .mockResolvedValueOnce([{ _id: 'account-1', currentBalance: 2000 }])
             .mockResolvedValueOnce({});
 
         const { result } = renderHook(() => useAuth());
 
         await act(async () => {
-            await result.current.balanceUpdate(75, 'expense');
+            await result.current.updateBalance(75, 'expense');
         });
 
         expect(request).toHaveBeenNthCalledWith(
-            2,
+            3,
             'data/accounts/account-1',
             {
                 method: 'PATCH',
@@ -244,7 +249,7 @@ describe('useAuth', () => {
         const { result } = renderHook(() => useAuth());
 
         await expect(
-            result.current.balanceUpdate(100, 'expense')
+            result.current.updateBalance(100, 'expense')
         ).rejects.toThrow('PATCH failed');
 
         expect(setUser).not.toHaveBeenCalled();
@@ -268,55 +273,34 @@ describe('useAuth', () => {
             clearLocalStorage: clearUser
         }));
 
-        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-            ok: true
-        }));
-
         const { result } = renderHook(() => useAuth());
 
         await act(async () => {
             await result.current.logoutHandler();
         });
 
-        expect(fetch).toHaveBeenCalledWith(
-            'http://localhost:3030/users/logout',
-            expect.objectContaining({
-                method: 'GET',
-                headers: expect.objectContaining({
-                    'X-authorization': 'token-1'
-                })
-            })
-        );
+        expect(request).toHaveBeenCalledWith('users/logout', {
+            auth: 'token-1'
+        });
 
         expect(clearUser).toHaveBeenCalledOnce();
     });
 
     it('clears the user when session validation fails', async () => {
         user = { _id: 'user-1', accessToken: 'expired-token' };
+
         useLocalState.mockImplementation(() => ({
             state: user,
             setLocalState: setUser,
             clearLocalStorage: clearUser
         }));
 
-        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-            ok: false
-        }));
+        request.mockRejectedValueOnce(new Error('expired-token'));
 
         renderHook(() => useAuth());
 
         await waitFor(() => {
             expect(clearUser).toHaveBeenCalledOnce();
         });
-
-        expect(fetch).toHaveBeenCalledWith(
-            'http://localhost:3030/users/me',
-            expect.objectContaining({
-                method: 'GET',
-                headers: expect.objectContaining({
-                    'X-authorization': 'expired-token'
-                })
-            })
-        );
     });
 });

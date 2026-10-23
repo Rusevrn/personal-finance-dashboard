@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, type SetStateAction } from "react";
 
-export default function useLocalState(initialState, key) {
-    const [state, setState] = useState(() => {
+export default function useLocalState<T>(initialState: T, key: string) {
+    const [state, setState] = useState<T>(() => {
         const storage = localStorage.getItem(key);
 
         if (!storage) {
@@ -12,12 +12,12 @@ export default function useLocalState(initialState, key) {
         return data;
     });
 
-    const setLocalState = (value) => {
-        setState(prevState => {
-            const input =
+    const setLocalState = (value: SetStateAction<T>) => {
+        setState((prevState: T) => {
+            const input: T =
                 typeof value === 'function'
-                    ? value(prevState)
-                    : value;
+                    ? (value as (prevState: T) => T)(prevState)
+                    : value as T;
 
             localStorage.setItem(key, JSON.stringify(input));
             return input;

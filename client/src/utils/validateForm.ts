@@ -1,6 +1,6 @@
-export default function validateForm(formData, requiredFields) {
+export default function validateForm(formData: Record<string, string>, requiredFields: string[]) {
 
-    let errors = {};
+    let errors: Record<string, string> = {};
 
     requiredFields.forEach(field => {
         if (!formData[field]?.trim()) {
