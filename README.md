@@ -49,10 +49,18 @@ The test suite uses Vitest and React Testing Library to cover API request behavi
 
 ## Getting Started
 
-### Prerequisites
+## Demo Account
 
+You can explore the application using the following demo credentials:
+
+- **Email:** `peter@abv.bg`
+- **Password:** `123456`
+
+The demo account provides access to the application's financial dashboard and features.
+
+### Prerequisites
 - Node.js and npm
-- The project's backend API, provided by the [SoftUni Practice Server](https://github.com/SoftUni/Practice-Server), running locally at `http://localhost:3030`
+- The project's backend API, provided by the [SoftUni Practice Server](https://github.com/softuni-practice-server/softuni-practice-server), running locally at `http://localhost:3030`
 
 ### Installation
 
@@ -106,7 +114,7 @@ ZZAP is an ongoing personal portfolio project focused on frontend development, a
 
 ## Acknowledgements
 
-The backend is powered by the [SoftUni Practice Server](https://github.com/SoftUni/Practice-Server), used for API development and testing.
+The backend is powered by the [SoftUni Practice Server](https://github.com/softuni-practice-server/softuni-practice-server), used for API development and testing.
 
 ## Author
 
